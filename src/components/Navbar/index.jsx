@@ -2,7 +2,7 @@ import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Logo from "../../assets/img/Logo.png";
 
-const Navbar = () => {
+const Navbar = ({ toggleModal }) => {
   return (
     <div className="w-full fixed bg-white z-10">
       <div className="flex justify-between items-center h-16 mx-[4rem]">
@@ -26,7 +26,8 @@ const Navbar = () => {
           <div>
             <button
               type="submit"
-              className="bg-[#6D9773] text-white py-2 px-3  text-sm rounded-lg"
+              className="bg-[#6D9773] text-white py-2 px-3 text-sm rounded-lg"
+              onClick={toggleModal}
             >
               Sign In
             </button>
