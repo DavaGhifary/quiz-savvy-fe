@@ -10,18 +10,31 @@ import CardTemplate from "../../components/Card/CardTemplate";
 import Footer from "../../components/Footer";
 import { useState } from "react";
 import SignIn from "../../components/SignIn";
+import SignUpEmail from "../../components/SignUp/SignUpEmail";
 
 const Home = () => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
-  const toggleModal = () => {
-    setIsModalOpen((prev) => !prev);
-  };
+  const [isSignInOpen, setIsSignInOpen] = useState(false);
+  const [isSignUpOpen, setIsSignUpOpen] = useState(false);
 
   return (
     <div>
-      <Navbar toggleModal={toggleModal} />
-      <SignIn isOpen={isModalOpen} onClose={toggleModal} />
+      <Navbar onSignInClick={() => setIsSignInOpen(true)} />
+      <SignIn
+        isOpen={isSignInOpen}
+        onClose={() => setIsSignInOpen(false)}
+        onSwitchToSignUp={() => {
+          setIsSignInOpen(false);
+          setIsSignUpOpen(true);
+        }}
+      />
+      <SignUpEmail
+        isOpen={isSignUpOpen}
+        onClose={() => setIsSignUpOpen(false)}
+        onSwitchToSignIn={() => {
+          setIsSignUpOpen(false);
+          setIsSignInOpen(true);
+        }}
+      />
       <div className="h-screen relative">
         <img src={Ornamen4} alt="" className="absolute right-0 top-[5rem]" />
         <img

@@ -10,32 +10,32 @@ const cardData = [
   {
     id: 2,
     image: "../../src/assets/img/BalikUbin.png",
-    title: "Explore Tiles",
+    title: "Membuka Kotak",
     description:
       "Temukan desain menarik lainnya dengan fitur interaktif yang inovatif.",
   },
   {
     id: 3,
     image: "../../src/assets/img/BalikUbin.png",
-    title: "Creative Patterns",
+    title: "Anagram",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
   {
     id: 4,
     image: "../../src/assets/img/BalikUbin.png",
-    title: "Creative Patterns",
+    title: "Mencari Kata",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
   {
     id: 5,
     image: "../../src/assets/img/BalikUbin.png",
-    title: "Creative Patterns",
+    title: "Benarkan Kalimatnya",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
   {
     id: 6,
     image: "../../src/assets/img/BalikUbin.png",
-    title: "Creative Patterns",
+    title: "Teka Teki silang",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
 ];
