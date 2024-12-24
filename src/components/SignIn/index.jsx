@@ -1,18 +1,67 @@
-import React from "react";
-import { useState } from "react";
+import React, { useState } from "react";
+import axios from "axios";
 import LogoGoogle from "../../assets/img/logoGoogle.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import SignUpEmail from "../SignUp/SignUpEmail";
+import { useNavigate } from "react-router-dom";
 
 const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
+  const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
+  const [formData, setFormData] = useState({ email: "", password: "" });
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+
+  if (!isOpen) return null;
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
   };
 
-  if (!isOpen) return null;
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+  };
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    // Validasi input
+    if (!formData.email || !formData.password) {
+      setErrorMessage("Email and password are required.");
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/login",
+        formData
+      );
+      const { token } = response.data;
+
+      // Simpan token (gunakan cara aman untuk aplikasi produksi)
+      localStorage.setItem("authToken", token);
+
+      // Redirect ke dashboard
+      navigate("/Dashboard");
+    } catch (error) {
+      // Tampilkan pesan error dari API
+      if (
+        error.response &&
+        error.response.data &&
+        error.response.data.message
+      ) {
+        setErrorMessage(error.response.data.message);
+      } else {
+        setErrorMessage("An unexpected error occurred. Please try again.");
+      }
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -43,11 +92,14 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
           </span>
         </p>
 
-        <form>
+        <form onSubmit={handleLogin}>
           {/* Email Input */}
           <div className="mt-4">
             <input
               type="email"
+              name="email"
+              value={formData.email}
+              onChange={handleInputChange}
               placeholder="Enter your email address"
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2"
             />
@@ -57,6 +109,9 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
           <div className="mt-4 relative">
             <input
               type={showPassword ? "text" : "password"}
+              name="password"
+              value={formData.password}
+              onChange={handleInputChange}
               placeholder="Enter your password"
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2"
             />
@@ -72,17 +127,20 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
             </span>
           </div>
 
-          {/* Forgot Password Link */}
-          <p className="text-right text-sm text-blue-500 hover:underline mt-2">
-            Forgot your password?
-          </p>
+          {/* Error Message */}
+          {errorMessage && (
+            <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
+          )}
 
           {/* Sign In Button */}
           <button
             type="submit"
-            className="w-full py-3 mt-4 text-white bg-blue-500 rounded-full hover:bg-blue-600 focus:outline-none"
+            className={`w-full py-3 mt-4 text-white bg-blue-500 rounded-full ${
+              isLoading ? "opacity-50 cursor-not-allowed" : "hover:bg-blue-600"
+            } focus:outline-none`}
+            disabled={isLoading}
           >
-            Sign In
+            {isLoading ? "Signing In..." : "Sign In"}
           </button>
         </form>
 
@@ -99,7 +157,6 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
           Continue with Google
         </button>
       </div>
-      {/* SignUp  */}
     </div>
   );
 };

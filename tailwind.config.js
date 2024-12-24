@@ -9,7 +9,8 @@ export default {
         "Tertiary": "#FFBA00", // Warna kustom
       },
       boxShadow: {
-        'inner-custom': 'inset 0 8px 10px #47EC1D', // Sesuaikan sesuai kebutuhan
+        'inner-corect': 'inset 0 0 10px 5px #47EC1D', // Sesuaikan sesuai kebutuhan
+        'inner-incorect': 'inset 0 0 10px 5px red', // Sesuaikan sesuai kebutuhan
       },
     },
   },

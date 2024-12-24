@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import Logo from "../../assets/img/Logo.png";
 import { Gauge, SwatchBook, Copy, ChevronLeft } from "lucide-react";
+import imageUser from "../../assets/img/Rectangle 37.png";
 
 const NavLinks = [
   {
@@ -28,8 +29,8 @@ const NavigationBar = () => {
   return (
     <div
       className={`${
-        isSidebarOpen ? "w-72" : "w-20"
-      } bg-primary border-r h-screen p-5 pt-8 relative duration-300`}
+        isSidebarOpen ? "w-64" : "w-20"
+      } bg-primary border-r h-screen p-5 pt-8 relative duration-300 flex flex-col justify-between`}
     >
       {/* Sidebar toggle button */}
       <ChevronLeft
@@ -39,46 +40,79 @@ const NavigationBar = () => {
         onClick={() => setIsSidebarOpen(!isSidebarOpen)}
       />
 
-      {/* Logo Section */}
-      <div className="flex gap-x-4 items-center">
-        <img src={Logo} width={40} alt="Logo" className="cursor-pointer" />
-        <h1
-          className={`text-white origin-left font-medium text-xl duration-200 ${
-            !isSidebarOpen && "scale-0"
-          }`}
-        >
-          Savvy
-        </h1>
-      </div>
+      <div>
+        {/* Logo Section */}
+        <div className="flex gap-x-4 items-center">
+          <img src={Logo} width={40} alt="Logo" className="cursor-pointer" />
+          <h1
+            className={`text-white origin-left font-medium text-xl duration-200 ${
+              !isSidebarOpen && "scale-0"
+            }`}
+          >
+            Savvy
+          </h1>
+        </div>
 
-      {/* Navigation Links */}
-      <ul className="pt-6">
-        {NavLinks.map((menu, index) => (
-          <li
-            key={index}
-            className={`flex rounded-md p-2 items-center gap-x-4 text-sm mt-2
+        {/* Navigation Links */}
+        <ul className="pt-6">
+          {NavLinks.map((menu, index) => (
+            <li
+              key={index}
+              className={`flex rounded-md p-2 items-center gap-x-4 text-sm mt-2
             ${
               location.pathname === menu.path
                 ? "bg-Tertiary text-white"
                 : "text-gray-300 hover:bg-Tertiary hover:text-white"
             }`}
-          >
-            <Link
-              to={menu.path}
-              className="flex items-center gap-x-4 w-full h-full"
             >
-              <menu.Icon className="text-white" />
-              <span
-                className={`${
-                  !isSidebarOpen && "hidden"
-                } origin-left duration-200`}
+              <Link
+                to={menu.path}
+                className="flex items-center gap-x-4 w-full h-full"
               >
-                {menu.name}
-              </span>
-            </Link>
-          </li>
-        ))}
-      </ul>
+                <menu.Icon className="text-white" />
+                <span
+                  className={`${
+                    !isSidebarOpen && "hidden"
+                  } origin-left duration-200`}
+                >
+                  {menu.name}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      <div>
+        {/* Last Quiz Section */}
+        {isSidebarOpen && (
+          <div className="mt-40">
+            <p className="text-white">Last Quiz</p>
+            <ul className="ml-6">
+              <li className="text-white">Rumus Pytagoras</li>
+              <li className="text-white">Rumus Pytagoras</li>
+              <li className="text-white">Rumus Pytagoras</li>
+            </ul>
+          </div>
+        )}
+
+        {/* Account Section */}
+        <div
+          className={`bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-32 -mx-3 p-1 ${
+            isSidebarOpen ? "bg-[#BABEC6] bg-opacity-[31%] p-2" : ""
+          }`}
+        >
+          <div className="px-2">
+            <img src={imageUser} width={40} alt="User" />
+          </div>
+          {isSidebarOpen && (
+            <div className="px-3">
+              <p className="text-md font-semibold">Dava Ghifary</p>
+              <p className="text-sm text-white">Admin</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 };
