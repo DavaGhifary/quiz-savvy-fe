@@ -1,9 +1,10 @@
 import React, { useState } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 import LogoGoogle from "../../assets/img/logoGoogle.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
-import { useNavigate } from "react-router-dom";
+import { showToast } from "../ToastNotification";
 
 const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
   const navigate = useNavigate();
@@ -27,37 +28,30 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
     e.preventDefault();
     setErrorMessage("");
 
-    // Validasi input
     if (!formData.email || !formData.password) {
       setErrorMessage("Email and password are required.");
+      showToast("error", "Email and password are required.");
       return;
     }
 
     setIsLoading(true);
 
     try {
-      const response = await axios.post(
-        "http://localhost:8000/api/login",
-        formData
-      );
-      const { token } = response.data;
+      const response = await axios.post("http://localhost:8000/api/login", formData);
+      const { token, user } = response.data;
 
-      // Simpan token (gunakan cara aman untuk aplikasi produksi)
+      // Store user data and token in localStorage
       localStorage.setItem("authToken", token);
+      localStorage.setItem("userDetails", JSON.stringify(user)); // Store the user details
 
-      // Redirect ke dashboard
+      // Show success toast
+      showToast("success", "Login successful!");
       navigate("/Dashboard");
     } catch (error) {
-      // Tampilkan pesan error dari API
-      if (
-        error.response &&
-        error.response.data &&
-        error.response.data.message
-      ) {
-        setErrorMessage(error.response.data.message);
-      } else {
-        setErrorMessage("An unexpected error occurred. Please try again.");
-      }
+      const errorMsg =
+        error.response?.data?.message || "An unexpected error occurred. Please try again.";
+      setErrorMessage(errorMsg);
+      showToast("error", errorMsg);
     } finally {
       setIsLoading(false);
     }

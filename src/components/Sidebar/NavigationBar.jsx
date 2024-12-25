@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/img/Logo.png";
-import { Gauge, SwatchBook, Copy, ChevronLeft } from "lucide-react";
+import { Gauge, SwatchBook, Copy, ChevronLeft, LogOut } from "lucide-react";
 import imageUser from "../../assets/img/Rectangle 37.png";
+import UserAvatar from "../UserAvatar";
 
 const NavLinks = [
   {
@@ -24,7 +25,44 @@ const NavLinks = [
 
 const NavigationBar = () => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
+  const [user, setUser] = useState(null); // Add user state
   const location = useLocation();
+  const navigate = useNavigate();
+  const popupRef = useRef(null); // Reference for popup
+
+  useEffect(() => {
+    const storedUser = JSON.parse(localStorage.getItem("userDetails"));
+    if (storedUser) {
+      console.log("Stored user:", storedUser);
+      setUser(storedUser);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("authToken"); // Remove auth token
+    localStorage.removeItem("userDetails");
+    navigate("/"); // Redirect to Home or Login page
+  };
+
+  // Handle clicks outside the popup
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (popupRef.current && !popupRef.current.contains(event.target)) {
+        setIsLogoutPopupOpen(false);
+      }
+    };
+
+    if (isLogoutPopupOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+    } else {
+      document.removeEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isLogoutPopupOpen]);
 
   return (
     <div
@@ -42,16 +80,18 @@ const NavigationBar = () => {
 
       <div>
         {/* Logo Section */}
-        <div className="flex gap-x-4 items-center">
-          <img src={Logo} width={40} alt="Logo" className="cursor-pointer" />
-          <h1
-            className={`text-white origin-left font-medium text-xl duration-200 ${
-              !isSidebarOpen && "scale-0"
-            }`}
-          >
-            Savvy
-          </h1>
-        </div>
+        <Link to="/">
+          <div className="flex gap-x-4 items-center">
+            <img src={Logo} width={40} alt="Logo" className="cursor-pointer" />
+            <h1
+              className={`text-white origin-left font-medium text-xl duration-200 ${
+                !isSidebarOpen && "scale-0"
+              }`}
+            >
+              Savvy
+            </h1>
+          </div>
+        </Link>
 
         {/* Navigation Links */}
         <ul className="pt-6">
@@ -98,20 +138,46 @@ const NavigationBar = () => {
 
         {/* Account Section */}
         <div
-          className={`bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-32 -mx-3 p-1 ${
-            isSidebarOpen ? "bg-[#BABEC6] bg-opacity-[31%] p-2" : ""
+          className={`relative bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-[7.5rem] -mx-3 p-2 cursor-pointer ${
+            isSidebarOpen
+              ? "bg-[#BABEC6] bg-opacity-[31%] p-2 cursor-pointer"
+              : ""
           }`}
+          onClick={() => setIsLogoutPopupOpen(true)}
         >
-          <div className="px-2">
-            <img src={imageUser} width={40} alt="User" />
+          <div className="px-1">
+            {/* Use UserAvatar component */}
+            <UserAvatar name={user?.nama} />
           </div>
+
           {isSidebarOpen && (
             <div className="px-3">
-              <p className="text-md font-semibold">Dava Ghifary</p>
-              <p className="text-sm text-white">Admin</p>
+              <p className="text-md font-semibold">{user?.nama || "Unknow"}</p>
+              <p className="text-sm text-white">{user?.role || "User"}</p>
             </div>
           )}
         </div>
+
+        {/* Logout Popup */}
+        {isLogoutPopupOpen && (
+          <div
+            ref={popupRef} // Attach reference to the popup
+            className={`absolute bottom-16 ${
+              isSidebarOpen ? "left-5 right-5" : "left-3 right-3"
+            } bg-[#BABEC6] bg-opacity-[31%] cursor-pointer rounded-md shadow-lg`}
+            style={{ zIndex: 1000 }}
+            onClick={handleLogout}
+          >
+            <button
+              className={`flex items-center justify-center ${
+                isSidebarOpen ? "px-3 py-2 gap-3" : "p-3"
+              } text-white rounded-lg`}
+            >
+              <LogOut />
+              {isSidebarOpen && "Logout"}
+            </button>
+          </div>
+        )}
       </div>
     </div>
   );

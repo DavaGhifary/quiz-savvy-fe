@@ -9,7 +9,7 @@ const Dashboard = () => {
       <div>
         <p>Dashboard</p>
       </div>
-      <div className="flex gap-10">
+      <div className="flex gap-10 items-center">
         <div className="w-60">
           <div className="relative">
             <input

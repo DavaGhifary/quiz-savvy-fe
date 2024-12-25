@@ -7,22 +7,67 @@ import Category from "./pages/Dashboard/Category";
 import Templates from "./pages/Dashboard/Templates";
 import CreateQuiz from "./pages/Quiz/CreateQuiz";
 import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import ToastNotification from "./components/ToastNotification";
 
 function App() {
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/Quiz" element={<QuestionQuiz />} />
-        <Route path="/CreateQuiz" element={<CreateQuiz />} />
-        <Route path="/Dashboard" element={<AdminLayout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="Category" element={<Category />} />
-          <Route path="Templates" element={<Templates />} />
-        </Route>
-        <Route path="*" element={<NotFound />} />
-      </Routes>
-    </Router>
+    <div>
+      <Router>
+        <Routes>
+          {/* Rute Home */}
+          <Route path="/" element={<Home />} />
+
+          {/* Rute yang membutuhkan login */}
+          <Route
+            path="/Quiz"
+            element={
+              <ProtectedRoute>
+                <QuestionQuiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/CreateQuiz"
+            element={
+              <ProtectedRoute>
+                <CreateQuiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route
+              path="Category"
+              element={
+                <ProtectedRoute>
+                  <Category />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="Templates"
+              element={
+                <ProtectedRoute>
+                  <Templates />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          {/* Rute Not Found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+      <ToastNotification />
+    </div>
   );
 }
 

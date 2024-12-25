@@ -1,18 +1,25 @@
 import React, { useState } from "react";
 import axios from "axios";
 import LogoGoogle from "../../assets/img/logoGoogle.png";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
+import { showToast } from "../ToastNotification";
 
 const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
-  const [step, setStep] = useState(1); // 1: Email, 2: Username, 3: Password
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState({
     email: "",
-    nama: "",
+    name: "",
     password: "",
   });
   const [errorMessage, setErrorMessage] = useState("");
-  const [successMessage, setSuccessMessage] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
+
+  const togglePasswordVisibility = () => {
+    setShowPassword((prev) => !prev);
+  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -21,7 +28,31 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
   };
 
   const handleContinue = async () => {
+    // Validasi pada setiap langkah
+    if (step === 1) {
+      if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
+        setErrorMessage("Please enter a valid email address.");
+        return;
+      }
+    }
+
+    if (step === 2) {
+      if (!formData.name || formData.name.length < 3) {
+        setErrorMessage("Username must be at least 3 characters long.");
+        return;
+      }
+    }
+
+    if (step === 3) {
+      if (!formData.password || formData.password.length < 8) {
+        setErrorMessage("Password must be at least 8 characters long.");
+        return;
+      }
+    }
+
+    // Jika input valid, lanjut ke langkah berikutnya atau kirim data
     if (step < 3) {
+      setErrorMessage(""); // Hapus pesan error jika valid
       setStep(step + 1);
     } else {
       const payload = {
@@ -33,10 +64,10 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/register", // Sesuaikan URL jika perlu
+          "http://localhost:8000/api/register",
           payload
         );
-        setSuccessMessage(response.data.message);
+        showToast("success", response.data.message || "Registration successful!");
         setErrorMessage("");
         onClose();
       } catch (error) {
@@ -45,20 +76,22 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
           if (errorData.errors && typeof errorData.errors === "object") {
             const errorMessages = Object.values(errorData.errors).join(", ");
             setErrorMessage(errorMessages);
+            showToast("error", errorMessages);
           } else {
             setErrorMessage(errorData.message || "Unknown error");
+            showToast("error", errorData.message || "Unknown error");
           }
         } else {
           setErrorMessage(error.message || "Something went wrong");
+          showToast("error", error.message || "Something went wrong");
         }
       }
     }
   };
 
   const handleClose = () => {
-    setStep(1); // Reset step to 1 (SignUpByEmail)
+    setStep(1);
     setErrorMessage("");
-    setSuccessMessage("");
     onClose();
   };
 
@@ -88,12 +121,6 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
             Log in
           </span>
         </p>
-
-        {successMessage && (
-          <div className="text-green-500 text-sm mt-4 text-center">
-            {successMessage}
-          </div>
-        )}
 
         <form>
           {step === 1 && (
@@ -131,9 +158,9 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
           )}
 
           {step === 3 && (
-            <div className="mt-4">
+            <div className="mt-4 relative">
               <input
-                type="password"
+                type={showPassword ? "text" : "password"}
                 name="password"
                 value={formData.password}
                 onChange={handleInputChange}
@@ -141,6 +168,16 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
                 className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2"
                 required
               />
+              <span
+                onClick={togglePasswordVisibility}
+                className="absolute right-4 top-3 text-gray-500 cursor-pointer"
+              >
+                {showPassword ? (
+                  <FontAwesomeIcon icon={faEyeSlash} />
+                ) : (
+                  <FontAwesomeIcon icon={faEye} />
+                )}
+              </span>
               {errorMessage && step === 3 && (
                 <div className="text-red-500 text-sm mt-2">{errorMessage}</div>
               )}
