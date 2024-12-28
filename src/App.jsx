@@ -1,34 +1,73 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import Home from "./pages/Home";
+import QuestionQuiz from "./pages/Quiz/QuestioQuiz";
+import AdminLayout from "./layouts/AdminLayout";
+import Dashboard from "./pages/Dashboard/Dashboard";
+import Category from "./pages/Dashboard/Category";
+import Templates from "./pages/Dashboard/Templates";
+import CreateQuiz from "./pages/Quiz/CreateQuiz";
+import NotFound from "./pages/NotFound";
+import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
+import ToastNotification from "./components/ToastNotification";
 
 function App() {
-  const [count, setCount] = useState(0);
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1 className="text-blue-400">Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <div>
+      <Router>
+        <Routes>
+          {/* Rute Home */}
+          <Route path="/" element={<Home />} />
+
+          {/* Rute yang membutuhkan login */}
+          <Route
+            path="/Quiz"
+            element={
+              <ProtectedRoute>
+                <QuestionQuiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/CreateQuiz"
+            element={
+              <ProtectedRoute>
+                <CreateQuiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Dashboard"
+            element={
+              <ProtectedRoute>
+                <AdminLayout />
+              </ProtectedRoute>
+            }
+          >
+            <Route index element={<Dashboard />} />
+            <Route
+              path="Category"
+              element={
+                <ProtectedRoute>
+                  <Category />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="Templates"
+              element={
+                <ProtectedRoute>
+                  <Templates />
+                </ProtectedRoute>
+              }
+            />
+          </Route>
+
+          {/* Rute Not Found */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+      <ToastNotification />
+    </div>
   );
 }
 
