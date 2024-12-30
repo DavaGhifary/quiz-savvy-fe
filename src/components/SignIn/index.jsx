@@ -5,6 +5,7 @@ import LogoGoogle from "../../assets/img/logoGoogle.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "../ToastNotification";
+import { setSession } from "../../utils/session";
 
 const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
   const navigate = useNavigate();
@@ -37,19 +38,23 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
     setIsLoading(true);
 
     try {
-      const response = await axios.post("http://localhost:8000/api/login", formData);
+      const response = await axios.post(
+        `${process.env.REACT_APP_API_URL}/login`,
+        formData
+      );
       const { token, user } = response.data;
 
-      // Store user data and token in localStorage
-      localStorage.setItem("authToken", token);
-      localStorage.setItem("userDetails", JSON.stringify(user)); // Store the user details
+      // Set session dengan durasi 24 jam
+      setSession("authToken", token, 24); // Menyimpan token
+      setSession("userDetails", user, 24); // Menyimpan data pengguna
 
       // Show success toast
       showToast("success", "Login successful!");
       navigate("/Dashboard");
     } catch (error) {
       const errorMsg =
-        error.response?.data?.message || "An unexpected error occurred. Please try again.";
+        error.response?.data?.message ||
+        "An unexpected error occurred. Please try again.";
       setErrorMessage(errorMsg);
       showToast("error", errorMsg);
     } finally {

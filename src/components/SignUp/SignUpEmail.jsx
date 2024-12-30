@@ -64,7 +64,7 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
 
       try {
         const response = await axios.post(
-          "http://localhost:8000/api/register",
+          `${process.env.REACT_APP_API_URL}/register`,
           payload
         );
         showToast("success", response.data.message || "Registration successful!");
