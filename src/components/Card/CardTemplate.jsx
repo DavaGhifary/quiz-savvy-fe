@@ -1,40 +1,42 @@
 // Contoh data untuk card
+import Image from "../../assets/img/BalikUbin.png";
+
 const cardData = [
   {
     id: 1,
-    image: "../../../src/assets/img/BalikUbin.png",
+    image: Image,
     title: "Balik Ubin",
     description:
       "Jelajahi serangkaian ubin dua sisi dengan mengetuk untuk memperbesar dan menggesek untuk membaliknya",
   },
   {
     id: 2,
-    image: "../../src/assets/img/BalikUbin.png",
+    image: Image,
     title: "Membuka Kotak",
     description:
       "Temukan desain menarik lainnya dengan fitur interaktif yang inovatif.",
   },
   {
     id: 3,
-    image: "../../src/assets/img/BalikUbin.png",
+    image: Image,
     title: "Anagram",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
   {
     id: 4,
-    image: "../../src/assets/img/BalikUbin.png",
+    image: Image,
     title: "Mencari Kata",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
   {
     id: 5,
-    image: "../../src/assets/img/BalikUbin.png",
+    image: Image,
     title: "Benarkan Kalimatnya",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
   {
     id: 6,
-    image: "../../src/assets/img/BalikUbin.png",
+    image: Image,
     title: "Teka Teki silang",
     description: "Ciptakan pola kreatif untuk mendekorasi ruang favorit Anda.",
   },
