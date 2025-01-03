@@ -26,6 +26,10 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
   };
 
   const handleLogin = async (e) => {
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+
     e.preventDefault();
     setErrorMessage("");
 
@@ -39,14 +43,19 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
 
     try {
       const response = await axios.post(
-        `${process.env.REACT_APP_API_URL}/login`,
+        `${apiUrl}/login`,
         formData
       );
-      const { token, user } = response.data;
 
-      // Set session dengan durasi 24 jam
-      setSession("authToken", token, 24); // Menyimpan token
-      setSession("userDetails", user, 24); // Menyimpan data pengguna
+      // Check if token and user are present in the response
+      const { token, user } = response.data;
+      if (!token || !user) {
+        throw new Error("Login failed: Invalid response data.");
+      }
+
+      // Set session with 24 hours expiration
+      setSession("authToken", token, 24);
+      setSession("userDetails", user, 24);
 
       // Show success toast
       showToast("success", "Login successful!");
@@ -54,6 +63,7 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp }) => {
     } catch (error) {
       const errorMsg =
         error.response?.data?.message ||
+        error.message ||
         "An unexpected error occurred. Please try again.";
       setErrorMessage(errorMsg);
       showToast("error", errorMsg);

@@ -28,7 +28,9 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
   };
 
   const handleContinue = async () => {
-    // Validasi pada setiap langkah
+
+    const apiUrl = import.meta.env.VITE_API_URL;
+
     if (step === 1) {
       if (!formData.email || !/\S+@\S+\.\S+/.test(formData.email)) {
         setErrorMessage("Please enter a valid email address.");
@@ -64,7 +66,7 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
 
       try {
         const response = await axios.post(
-          `${process.env.REACT_APP_API_URL}/register`,
+          `${apiUrl}/register`,
           payload
         );
         showToast("success", response.data.message || "Registration successful!");
