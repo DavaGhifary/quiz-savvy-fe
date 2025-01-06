@@ -3,17 +3,19 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import Logo from "../../assets/img/Logo.png";
 import UserAvatar from "../UserAvatar";
+import { getSession } from "../../utils/session";
 
 const Navbar = ({ onSignInClick }) => {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // Check if the user is logged in and fetch the user data from localStorage or API
-    const storedUser = JSON.parse(localStorage.getItem("userDetails")); // Adjust this based on your data storage method
-    if (storedUser) {
-      setUser(storedUser); // Assuming the user details are stored in localStorage
-    }
-  }, []);
+      const storedUser = getSession("userDetails");  // Retrieve user data from session
+      console.log("Stored user:", storedUser); // Debug log to check the data
+    
+      if (storedUser) {
+        setUser(storedUser);  // Set user data if available
+      }
+    }, []);
 
   return (
     <div className="w-full fixed bg-white z-10">

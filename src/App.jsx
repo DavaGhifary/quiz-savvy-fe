@@ -9,6 +9,8 @@ import CreateQuiz from "./pages/Quiz/CreateQuiz";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import ToastNotification from "./components/ToastNotification";
+import Quiztes from "./pages/Quiz/Quiztes";
+import Result from "./pages/Quiz/Result";
 
 function App() {
   return (
@@ -20,7 +22,7 @@ function App() {
 
           {/* Rute yang membutuhkan login */}
           <Route
-            path="/Quiz"
+            path="/Quiz/:quizId"
             element={
               <ProtectedRoute>
                 <QuestionQuiz />
@@ -28,10 +30,26 @@ function App() {
             }
           />
           <Route
-            path="/CreateQuiz"
+            path="/Result/:quizId"
+            element={
+              <ProtectedRoute>
+                <Result />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/CreateQuiz/:quizId"
             element={
               <ProtectedRoute>
                 <CreateQuiz />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/Quiztes"
+            element={
+              <ProtectedRoute>
+                <Quiztes />
               </ProtectedRoute>
             }
           />

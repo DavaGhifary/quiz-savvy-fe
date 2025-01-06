@@ -15,8 +15,6 @@ const UserAvatar = ({ name, email }) => {
       <div className="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center text-xl">
         {initials}
       </div>
-      {/* User Name */}
-      {/* <p className="text-lg">{name || email}</p> */}
     </div>
   );
 };

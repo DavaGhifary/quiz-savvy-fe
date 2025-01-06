@@ -1,15 +1,32 @@
-import React from "react";
+import React, { useState } from "react";
 import NavigationBar from "../components/Sidebar/NavigationBar";
 import { Outlet } from "react-router-dom";
 
 const AdminLayout = () => {
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+
+  const handleSidebarToggle = (state) => {
+    setIsSidebarOpen(state);
+  };
+
   return (
-    <div className="w-full flex">
+    <div className="h-screen bg-[#F8F8FF] flex">
       {/* Sidebar */}
-      <NavigationBar />
+      <div
+        className={`${
+          isSidebarOpen ? "w-64" : "w-20"
+        } fixed top-0 left-0 h-full`}
+      >
+        <NavigationBar onToggleSidebar={handleSidebarToggle} />
+      </div>
+
       {/* Main Content */}
-      <main className="flex-grow p-4">
-        <Outlet /> 
+      <main
+        className={`flex-grow h-full overflow-y-auto p-8 duration-300 ${
+          isSidebarOpen ? "ml-64" : "ml-20"
+        }`}
+      >
+        <Outlet />
       </main>
     </div>
   );

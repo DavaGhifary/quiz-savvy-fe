@@ -1,9 +1,17 @@
-import React from 'react'
+import React from "react";
+import CategoryList from "../../components/CategoryList";
 
-function Category() {
+const Category = () => {
   return (
-    <div>Category</div>
-  )
-}
+    <div>
+      <div>
+        <p>Category</p>
+      </div>
+      <div className="mt-8">
+        <CategoryList />
+      </div>
+    </div>
+  );
+};
 
-export default Category
+export default Category;
