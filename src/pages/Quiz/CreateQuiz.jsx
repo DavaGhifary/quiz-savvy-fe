@@ -12,6 +12,7 @@ import Checkbox from "../../components/Checbox/Checbox";
 import { Link, useParams } from "react-router-dom";
 import axios from "axios";
 import ModalCategory from "../../components/Modal/ModalCategory";
+import { showToast } from "../../components/ToastNotification";
 
 const CreateQuiz = () => {
   const { quizId } = useParams();
@@ -28,7 +29,7 @@ const CreateQuiz = () => {
     },
   ]);
 
-  const questionRefs = useRef({}); // Tambahkan referensi untuk pertanyaan
+  const questionRefs = useRef({}); 
 
   const handleScrollToQuestion = (questionId) => {
     const questionElement = questionRefs.current[questionId];
@@ -38,16 +39,16 @@ const CreateQuiz = () => {
   };
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showPopup, setShowPopup] = useState(null); // State untuk menyimpan ID popup yang aktif
-  const [isModalOpen, setIsModalOpen] = useState(false); // State to control modal visibility
+  const [showPopup, setShowPopup] = useState(null); 
+  const [isModalOpen, setIsModalOpen] = useState(false); 
 
   const handlePopupToggle = (questionId, event) => {
-    event.stopPropagation(); // Mencegah propagasi event ke elemen lain
+    event.stopPropagation(); 
     setShowPopup((prev) => (prev === questionId ? null : questionId));
   };
 
   const handlePageClick = () => {
-    setShowPopup(null); // Tutup popup saat pengguna mengklik area di luar
+    setShowPopup(null); 
   };
 
   useEffect(() => {
@@ -128,73 +129,71 @@ const CreateQuiz = () => {
 
   const handleCreateQuiz = async () => {
     setIsSubmitting(true);
-  
+
     for (const question of questions) {
       if (!question.content.trim()) {
         return;
       }
-  
+
       for (const answer of question.answers) {
         if (!answer.jawaban_pilihan.trim()) {
           return;
         }
       }
     }
-  
+
     try {
       if (!quizId) {
         console.error("Quiz ID is missing.");
         return;
       }
-  
+
       const apiUrl = import.meta.env.VITE_API_URL;
       const currentQuizId = quizId;
-  
+
       for (const question of questions) {
         const questionPayload = {
           quiz_id: currentQuizId,
           question_text: question.content.trim(),
           question_type: "multiple_choice",
         };
-        console.log(questionPayload);
-  
+
         const questionResponse = await axios.post(
           `${apiUrl}/questions`,
           questionPayload
         );
-  
+
         const newQuestionId =
           questionResponse.data?.id || questionResponse.data?.question?.id;
-  
+
         if (!newQuestionId) {
           console.error("Failed to save question:", questionResponse.data);
           throw new Error(`Failed to save question: ${question.title}`);
         }
-  
+
         for (const answer of question.answers) {
           const answerPayload = {
             question_id: newQuestionId,
             jawaban_pilihan: answer.jawaban_pilihan.trim(),
             jawaban_valid: answer.jawaban_valid,
           };
-          console.log(answerPayload);
           await axios.post(`${apiUrl}/answers`, answerPayload);
         }
       }
-  
+
       saveTimeEstimateToLocalStorage();
-  
-      alert("Quiz created successfully!");
+
+      showToast("success", "Quiz created successfully!");
       setIsModalOpen(true);
     } catch (error) {
       console.error(
         "Error creating quiz:",
         error.response?.data || error.message
       );
-      alert("Error creating quiz.");
+      showToast("error", "Error creating quiz.");
     }
   };
-  
+
   const saveTimeEstimateToLocalStorage = () => {
     const timeEstimates = questions.map((q) => ({
       id: q.id,
@@ -203,10 +202,9 @@ const CreateQuiz = () => {
     localStorage.setItem("timeEstimates", JSON.stringify(timeEstimates));
     console.log("Time estimates saved to localStorage:", timeEstimates);
   };
-  
 
   const handleCloseModal = () => {
-    setIsModalOpen(false); // Close the modal
+    setIsModalOpen(false); 
   };
 
   return (

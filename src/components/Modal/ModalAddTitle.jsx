@@ -2,7 +2,7 @@ import { useRef, useState } from "react";
 import { ImagePlus, Trash2 } from "lucide-react";
 import axios from "axios";
 import { getSession } from "../../utils/session";
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { useNavigate } from "react-router-dom"; 
 import { showToast } from "../ToastNotification";
 
 const ModalAddTitle = ({ isOpen, closeModal }) => {
@@ -13,27 +13,25 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const fileInputRef = useRef(null);
-  const navigate = useNavigate(); // Initialize the navigate function
-
-  // Fungsi untuk menangani perubahan gambar
+  const navigate = useNavigate(); 
+  
   const handleImageChange = (e, questionId) => {
     const file = e.target.files[0];
     if (file) {
       const newQuestions = [...questions];
       const imageUrl = URL.createObjectURL(file);
-      newQuestions[questionId].image = imageUrl; // Set image URL from the file
+      newQuestions[questionId].image = imageUrl; 
       setQuestions(newQuestions);
     }
   };
 
-  // Fungsi untuk menghapus gambar
+  
   const handleRemoveImage = (questionId) => {
     const newQuestions = [...questions];
-    newQuestions[questionId].image = ""; // Set to empty to remove image
+    newQuestions[questionId].image = ""; 
     setQuestions(newQuestions);
   };
 
-  // Fungsi untuk membuat judul kuis
   const handleCreateQuizTitle = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -54,8 +52,6 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
     const selectedImage = fileInputRef.current?.files[0];
     if (selectedImage) {
       formData.append("gambar", selectedImage);
-    } else {
-      formData.append("gambar", "/Group 13.png");
     }
 
     formData.append("createdBy", user.id);
@@ -99,7 +95,6 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
     }
   };
 
-  // Jika modal tidak terbuka, return null
   if (!isOpen) return null;
 
   return (
@@ -147,7 +142,7 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
                   </div>
                 </div>
                 <img
-                  src={questions[0].image || "/Group 13.png"} // Default to Group 13.png
+                  src={questions[0].image || "/Group_13.png"} // Default to Group 13.png
                   className="w-[210px] h-[160px]"
                   alt="Quiz Title"
                 />

@@ -1,19 +1,20 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
 
 const ModalCategory = ({ isOpen, onClose, quizId }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
-  // Fetch categories from API
   useEffect(() => {
     if (isOpen) {
       axios
         .get(`${apiUrl}/categories`)
         .then((response) => {
-          setCategories(response.data); // assuming the API returns an array of categories
+          setCategories(response.data); 
         })
         .catch((error) => {
           console.error("There was an error fetching the categories!", error);
@@ -45,6 +46,7 @@ const ModalCategory = ({ isOpen, onClose, quizId }) => {
       .then((response) => {
         console.log("Category submitted successfully:", response.data);
         onClose();
+        navigate(`/Dashboard`);
       })
       .catch((error) => {
         console.error(

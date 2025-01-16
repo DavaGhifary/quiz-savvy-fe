@@ -8,14 +8,15 @@ export const UserProvider = ({ children }) => {
   const [user, setUser] = useState(null); // State to store user information
   const [loading, setLoading] = useState(true); // State to track loading
 
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchUser = async () => {
       try {
         const token = localStorage.getItem("authToken");
 
         if (token) {
-          // Verify token and fetch user data
-          const response = await axios.get("http://localhost:8000/api/users", {
+          const response = await axios.get(`${apiUrl}/users`, {
             headers: {
               Authorization: `Bearer ${token}`,
             },

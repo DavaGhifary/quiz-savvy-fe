@@ -5,6 +5,7 @@ import { Gauge, SwatchBook, Copy, ChevronLeft, LogOut } from "lucide-react";
 import UserAvatar from "../UserAvatar";
 import { showToast } from "../ToastNotification";
 import { getSession } from "../../utils/session";
+import axios from "axios";
 
 const NavLinks = [
   {
@@ -28,29 +29,49 @@ const NavigationBar = ({ onToggleSidebar }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
   const [user, setUser] = useState(null);
+  const [roleName, setRoleName] = useState("Unknown Role"); // State untuk nama role
   const location = useLocation();
   const navigate = useNavigate();
-  const popupRef = useRef(null); // Reference for popup
+  const popupRef = useRef(null);
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const storedUser = getSession("userDetails"); // Retrieve user data from session
+    const storedUser = getSession("userDetails"); 
     if (storedUser) {
-      setUser(storedUser); // Set user data if available
+      setUser(storedUser);
+      fetchRoleName(storedUser.roles_id); 
+    } else {
+      axios
+        .get(`${apiUrl}/users`) 
+        .then((response) => {
+          setUser(response.data);
+          fetchRoleName(response.data.roles_id); 
+        })
+        .catch((error) => console.error("Failed to fetch user data:", error));
     }
   }, []);
 
+  const fetchRoleName = (rolesId) => {
+    if (rolesId) {
+      axios
+        .get(`${apiUrl}/roles/${rolesId}`) 
+        .then((response) => setRoleName(response.data.nama))
+        .catch((error) => console.error("Failed to fetch role name:", error));
+    }
+  };
+
   const removeSession = (key) => {
-    localStorage.removeItem(key); // Assuming removeSession is removing items from localStorage
+    localStorage.removeItem(key); 
   };
 
   const handleLogout = () => {
     removeSession("authToken");
     removeSession("userDetails");
     showToast("success", "Logout successful!");
-    navigate("/"); // Redirect after logout
+    navigate("/"); 
   };
 
-  // Handle clicks outside the popup
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (popupRef.current && !popupRef.current.contains(event.target)) {
@@ -72,7 +93,7 @@ const NavigationBar = ({ onToggleSidebar }) => {
   const handleSidebarToggle = () => {
     setIsSidebarOpen(!isSidebarOpen);
     if (onToggleSidebar) {
-      onToggleSidebar(!isSidebarOpen); // Pass the new state to parent component
+      onToggleSidebar(!isSidebarOpen);
     }
   };
 
@@ -82,16 +103,14 @@ const NavigationBar = ({ onToggleSidebar }) => {
         isSidebarOpen ? "w-64" : "w-20"
       } bg-primary border-r h-screen p-5 pt-8 relative duration-300 flex flex-col justify-between`}
     >
-      {/* Sidebar toggle button */}
       <ChevronLeft
         className={`absolute cursor-pointer -right-3 top-9 w-6 bg-Tertiary text-white rounded-full ${
           !isSidebarOpen && "rotate-180"
         }`}
-        onClick={handleSidebarToggle} // Toggle the sidebar
+        onClick={handleSidebarToggle}
       />
 
       <div>
-        {/* Logo Section */}
         <Link to="/">
           <div className="flex gap-x-4 items-center">
             <img src={Logo} width={40} alt="Logo" className="cursor-pointer" />
@@ -105,17 +124,15 @@ const NavigationBar = ({ onToggleSidebar }) => {
           </div>
         </Link>
 
-        {/* Navigation Links */}
         <ul className="pt-6">
           {NavLinks.map((menu, index) => (
             <li
               key={index}
-              className={`flex rounded-md p-2 items-center gap-x-4 text-sm mt-2
-            ${
-              location.pathname === menu.path
-                ? "bg-Tertiary text-white"
-                : "text-gray-300 hover:bg-Tertiary hover:text-white"
-            }`}
+              className={`flex rounded-md p-2 items-center gap-x-4 text-sm mt-2 ${
+                location.pathname === menu.path
+                  ? "bg-Tertiary text-white"
+                  : "text-gray-300 hover:bg-Tertiary hover:text-white"
+              }`}
             >
               <Link
                 to={menu.path}
@@ -136,29 +153,24 @@ const NavigationBar = ({ onToggleSidebar }) => {
       </div>
 
       <div>
-        {/* Account Section */}
         <div
-          className={`relative bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-[7.5rem] -mx-3 p-2 cursor-pointer ${
-            isSidebarOpen
-              ? "bg-[#BABEC6] bg-opacity-[31%] p-2 cursor-pointer"
-              : ""
-          }`}
+          className={`relative bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-[7.5rem] -mx-3 p-2 cursor-pointer`}
           onClick={() => setIsLogoutPopupOpen(true)}
         >
           <div className="px-1">
-            {/* Use UserAvatar component */}
             <UserAvatar name={user?.nama} />
           </div>
 
           {isSidebarOpen && (
             <div className="px-3">
-              <p className="text-md font-semibold">{user?.nama || "Unknown"}</p>
-              <p className="text-sm text-white">{user?.role || "User"}</p>
+              <p className="text-md font-semibold">
+                {user?.nama || "Unknown User"}
+              </p>
+              <p className="text-sm text-white">{roleName}</p>
             </div>
           )}
         </div>
 
-        {/* Logout Popup */}
         {isLogoutPopupOpen && (
           <div
             ref={popupRef}
@@ -172,8 +184,8 @@ const NavigationBar = ({ onToggleSidebar }) => {
                 isSidebarOpen ? "px-3 py-2 gap-3" : "p-3"
               } text-white rounded-lg`}
               onClick={(e) => {
-                e.stopPropagation(); // Prevent the click from closing the popup
-                handleLogout(); // Logout action
+                e.stopPropagation();
+                handleLogout();
               }}
             >
               <LogOut />
