@@ -9,8 +9,8 @@ import CreateQuiz from "./pages/Quiz/CreateQuiz";
 import NotFound from "./pages/NotFound";
 import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 import ToastNotification from "./components/ToastNotification";
-import Quiztes from "./pages/Quiz/Quiztes";
 import Result from "./pages/Quiz/Result";
+import MyQuizz from "./pages/Quiz/MyQuizz";
 
 function App() {
   return (
@@ -46,14 +46,6 @@ function App() {
             }
           />
           <Route
-            path="/Quiztes"
-            element={
-              <ProtectedRoute>
-                <Quiztes />
-              </ProtectedRoute>
-            }
-          />
-          <Route
             path="/Dashboard"
             element={
               <ProtectedRoute>
@@ -75,6 +67,14 @@ function App() {
               element={
                 <ProtectedRoute>
                   <Templates />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="MyQuiz"
+              element={
+                <ProtectedRoute>
+                  <MyQuizz />
                 </ProtectedRoute>
               }
             />

@@ -1,7 +1,14 @@
 import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/img/Logo.png";
-import { Gauge, SwatchBook, Copy, ChevronLeft, LogOut } from "lucide-react";
+import {
+  Gauge,
+  SwatchBook,
+  Copy,
+  ChevronLeft,
+  LogOut,
+  BookUser,
+} from "lucide-react";
 import UserAvatar from "../UserAvatar";
 import { showToast } from "../ToastNotification";
 import { getSession } from "../../utils/session";
@@ -37,16 +44,16 @@ const NavigationBar = ({ onToggleSidebar }) => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const storedUser = getSession("userDetails"); 
+    const storedUser = getSession("userDetails");
     if (storedUser) {
       setUser(storedUser);
-      fetchRoleName(storedUser.roles_id); 
+      fetchRoleName(storedUser.roles_id);
     } else {
       axios
-        .get(`${apiUrl}/users`) 
+        .get(`${apiUrl}/users`)
         .then((response) => {
           setUser(response.data);
-          fetchRoleName(response.data.roles_id); 
+          fetchRoleName(response.data.roles_id);
         })
         .catch((error) => console.error("Failed to fetch user data:", error));
     }
@@ -55,21 +62,21 @@ const NavigationBar = ({ onToggleSidebar }) => {
   const fetchRoleName = (rolesId) => {
     if (rolesId) {
       axios
-        .get(`${apiUrl}/roles/${rolesId}`) 
+        .get(`${apiUrl}/roles/${rolesId}`)
         .then((response) => setRoleName(response.data.nama))
         .catch((error) => console.error("Failed to fetch role name:", error));
     }
   };
 
   const removeSession = (key) => {
-    localStorage.removeItem(key); 
+    localStorage.removeItem(key);
   };
 
   const handleLogout = () => {
     removeSession("authToken");
     removeSession("userDetails");
     showToast("success", "Logout successful!");
-    navigate("/"); 
+    navigate("/");
   };
 
   useEffect(() => {
@@ -179,6 +186,16 @@ const NavigationBar = ({ onToggleSidebar }) => {
             } bg-[#BABEC6] bg-opacity-[31%] cursor-pointer rounded-md shadow-lg`}
             style={{ zIndex: 1000 }}
           >
+            <Link to="/Dashboard/MyQuiz">
+              <button
+                className={`flex items-center justify-center ${
+                  isSidebarOpen ? "px-3 py-2 gap-3" : "p-3"
+                } text-white rounded-lg`}
+              >
+                <BookUser />
+                {isSidebarOpen && "My Quiz"}
+              </button>
+            </Link>
             <button
               className={`flex items-center justify-center ${
                 isSidebarOpen ? "px-3 py-2 gap-3" : "p-3"

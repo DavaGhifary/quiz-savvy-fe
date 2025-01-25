@@ -28,10 +28,7 @@ const Dashboard = () => {
 
   return (
     <div className="h-full">
-      <div className="flex justify-between">
-        <div>
-          <p>Dashboard</p>
-        </div>
+      <div className="flex justify-end">
         <div className="flex gap-10 items-center">
           <div className="w-60">
             <div className="relative">
@@ -65,7 +62,7 @@ const Dashboard = () => {
       </div>
       <div className="mt-8 w-full">
         <div className="my-3">
-          <p className="text-lg font-semibold">My Quiz</p>
+          <p className="text-lg font-semibold">Dashboard</p>
         </div>
         <div className="py-3">
           <CardQuizzes />
