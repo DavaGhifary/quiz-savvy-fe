@@ -5,7 +5,7 @@ const Category = () => {
   return (
     <div>
       <div>
-        <p>Category</p>
+        <p className="text-lg font-semibold">Category</p>
       </div>
       <div className="mt-8">
         <CategoryList />

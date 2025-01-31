@@ -404,6 +404,7 @@ const CreateQuiz = () => {
                   <div className="bg-gray-300 rounded-md flex items-center gap-2">
                     <input
                       id={`time-${question.id}`}
+                      disabled
                       type="number"
                       min="1"
                       className="w-12 bg-gray-300 border border-gray-300 rounded-md text-center text-gray-700 text-sm py-1"

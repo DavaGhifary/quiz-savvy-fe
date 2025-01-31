@@ -9,6 +9,7 @@ import CreateQuiz from "../Quiz/CreateQuiz";
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quizId, setQuizId] = useState(null);
+  const [searchTerm, setSearchTerm] = useState(""); 
 
   const openModal = () => setIsModalOpen(true);
   const closeModal = () => setIsModalOpen(false);
@@ -19,17 +20,21 @@ const Dashboard = () => {
 
   useEffect(() => {
     const token = getSession("authToken");
-    console.log("Token:", token); // Tambahkan log untuk memeriksa token
     if (!token) {
       removeSession("userDetails");
       window.location.href = "/";
     }
   }, []);
 
+  const handleSearchChange = (event) => {
+    setSearchTerm(event.target.value);
+  };
+
   return (
     <div className="h-full">
       <div className="flex justify-end">
         <div className="flex gap-10 items-center">
+          {/* Input Search */}
           <div className="w-60">
             <div className="relative">
               <input
@@ -37,6 +42,8 @@ const Dashboard = () => {
                 name="search"
                 className="px-3 py-2 bg-white border shadow-sm border-slate-300 placeholder-slate-400 focus:outline-none focus:border-sky-500 focus:ring-sky-500 w-60 rounded-md sm:text-sm focus:ring-1"
                 placeholder="Search"
+                value={searchTerm}
+                onChange={handleSearchChange} // Tangkap perubahan input pencarian
               />
               <FontAwesomeIcon
                 icon={faMagnifyingGlass}
@@ -44,6 +51,7 @@ const Dashboard = () => {
               />
             </div>
           </div>
+
           <div>
             <button
               onClick={openModal}
@@ -55,17 +63,18 @@ const Dashboard = () => {
             <ModalAddTitle
               isOpen={isModalOpen}
               closeModal={closeModal}
-              onQuizCreated={handleQuizCreated} // Pass quizId on creation
+              onQuizCreated={handleQuizCreated}
             />
           </div>
         </div>
       </div>
+
       <div className="mt-8 w-full">
         <div className="my-3">
           <p className="text-lg font-semibold">Dashboard</p>
         </div>
         <div className="py-3">
-          <CardQuizzes />
+          <CardQuizzes searchTerm={searchTerm} />
         </div>
       </div>
     </div>
