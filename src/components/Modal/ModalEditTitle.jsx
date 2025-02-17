@@ -7,7 +7,7 @@ import { showToast } from "../ToastNotification";
 const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
   const [loading, setLoading] = useState(false);
   const [quiz, setQuiz] = useState({
-    image: "", // Tempatkan URL gambar atau file di sini
+    gambar: "", // Tempatkan URL gambar atau file di sini
     title: "",
     description: "",
   });
@@ -20,11 +20,11 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
   useEffect(() => {
     if (initialData) {
       setQuiz({
-        image: initialData.image || "", // Ambil URL gambar dari data awal
+        gambar: initialData.gambar || "", // Ambil URL gambar dari data awal
         title: initialData.title || "",
         description: initialData.description || "",
       });
-      setPreviewImage(initialData.image || ""); // Gunakan gambar awal untuk pratinjau
+      setPreviewImage(initialData.gambar || ""); // Gunakan gambar awal untuk pratinjau
     }
   }, [initialData]);
 
@@ -33,57 +33,57 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
     if (file) {
       const imageUrl = URL.createObjectURL(file);
       setPreviewImage(imageUrl); // Pratinjau gambar baru
-      setQuiz((prevQuiz) => ({ ...prevQuiz, image: file })); // Simpan file gambar
+      setQuiz((prevQuiz) => ({ ...prevQuiz, gambar: file })); // Simpan file gambar
     }
   };
 
   const handleRemoveImage = () => {
     setPreviewImage(""); // Hapus pratinjau gambar
-    setQuiz((prevQuiz) => ({ ...prevQuiz, image: "" })); // Kosongkan gambar
+    setQuiz((prevQuiz) => ({ ...prevQuiz, gambar: "" })); // Kosongkan gambar
   };
 
   const handleEditQuizTitle = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-  
+
     const user = getSession("userDetails");
     if (!user) {
       setError("User session not found or has expired. Please login.");
       setLoading(false);
       return;
     }
-  
+
     // Validate that the title is not empty
     if (!quiz.title.trim()) {
       setError("Title is required.");
       setLoading(false);
       return;
     }
-  
+
     const formData = new FormData();
-  
+
     // Append updated fields only
     if (quiz.title !== initialData.title) {
       formData.append("title", quiz.title); // Ensure title is included if changed
     }
-  
+
     if (quiz.description !== initialData.description) {
       formData.append("description", quiz.description); // Add description if changed
     }
-  
+
     // Check if there is an image selected and ensure it's not a URL
-    if (quiz.image && quiz.image instanceof File) {
-      formData.append("gambar", quiz.image); // Add the image file if present
+    if (quiz.gambar && quiz.gambar instanceof File) {
+      formData.append("gambar", quiz.gambar); // Add the image file if present
     }
-  
+
     formData.append("updatedBy", user.id);
-  
+
     // Debugging: Log form data to check the fields before sending
     for (let [key, value] of formData.entries()) {
       console.log(key, value); // Log all the fields in the formData
     }
-  
+
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
       const response = await axios.put(`${apiUrl}/quiz/${quizId}`, formData, {
@@ -91,7 +91,7 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (response.status === 200) {
         showToast("success", "Quiz Title updated successfully!");
         closeModal();
@@ -110,7 +110,6 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
       setLoading(false);
     }
   };
-  
 
   if (!isOpen) return null;
 
@@ -155,7 +154,7 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
                   </div>
                 </div>
                 <img
-                  src={previewImage || initialData?.image || "/Group_13.png"}
+                  src={previewImage || initialData?.gambar || "/Group_13.png"}
                   className="w-[210px] h-[160px] object-cover rounded-md"
                   alt="Quiz Title"
                 />

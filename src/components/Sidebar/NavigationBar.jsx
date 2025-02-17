@@ -160,6 +160,14 @@ const NavigationBar = ({ onToggleSidebar }) => {
       </div>
 
       <div>
+        <div className="mb-6">
+          <div>
+            <p className="text-white">Last Quiz</p>
+          </div>
+          <div className="pl-4">
+            <p className="text-white">Quiz Pytaghoras</p>
+          </div>
+        </div>
         <div
           className={`relative bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-[7.5rem] -mx-3 p-2 cursor-pointer`}
           onClick={() => setIsLogoutPopupOpen(true)}

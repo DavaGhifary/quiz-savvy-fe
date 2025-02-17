@@ -11,6 +11,7 @@ import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRou
 import ToastNotification from "./components/ToastNotification";
 import Result from "./pages/Quiz/Result";
 import MyQuizz from "./pages/Quiz/MyQuizz";
+import RekapQuiz from "./pages/Quiz/RekapQuiz";
 
 function App() {
   return (
@@ -34,6 +35,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Result />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/RekapQuiz"
+            element={
+              <ProtectedRoute>
+                <RekapQuiz />
               </ProtectedRoute>
             }
           />
