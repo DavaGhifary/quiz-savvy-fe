@@ -23,8 +23,8 @@ function QuizList({ searchTerm }) {
     navigate(`/Quiz/${quizId}`);
   };
 
-  const filteredQuizzes = quizzes.filter((quiz) =>
-    quiz.title.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredQuizzes = quizzes.filter(
+    (quiz) => quiz.title && quiz.title.toLowerCase().includes(searchTerm?.toLowerCase() || "")
   );
 
   return (

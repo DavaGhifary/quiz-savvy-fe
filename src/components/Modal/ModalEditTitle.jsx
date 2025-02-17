@@ -77,7 +77,7 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
       formData.append("gambar", quiz.gambar); // Add the image file if present
     }
 
-    formData.append("updatedBy", user.id);
+    // formData.append("updatedBy", user.id);
 
     // Debugging: Log form data to check the fields before sending
     for (let [key, value] of formData.entries()) {
@@ -86,11 +86,15 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
 
     try {
       const apiUrl = import.meta.env.VITE_API_URL;
-      const response = await axios.put(`${apiUrl}/quiz/${quizId}`, formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+      const response = await axios.post(
+        `${apiUrl}/edit-title/${quizId}`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
 
       if (response.status === 200) {
         showToast("success", "Quiz Title updated successfully!");
