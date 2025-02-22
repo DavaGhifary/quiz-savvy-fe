@@ -13,6 +13,7 @@ import UserAvatar from "../UserAvatar";
 import { showToast } from "../ToastNotification";
 import { getSession } from "../../utils/session";
 import axios from "axios";
+import QuizHistory from "../../pages/Quiz/QuizHistory";
 
 const NavLinks = [
   {
@@ -160,14 +161,8 @@ const NavigationBar = ({ onToggleSidebar }) => {
       </div>
 
       <div>
-        <div className="mb-6">
-          <div>
-            <p className="text-white">Last Quiz</p>
-          </div>
-          <div className="pl-4">
-            <p className="text-white">Quiz Pytaghoras</p>
-          </div>
-        </div>
+        {/* // history quiz */}
+        <QuizHistory />
         <div
           className={`relative bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-[7.5rem] -mx-3 p-2 cursor-pointer`}
           onClick={() => setIsLogoutPopupOpen(true)}
@@ -185,7 +180,6 @@ const NavigationBar = ({ onToggleSidebar }) => {
             </div>
           )}
         </div>
-
         {isLogoutPopupOpen && (
           <div
             ref={popupRef}
