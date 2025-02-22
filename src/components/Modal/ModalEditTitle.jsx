@@ -64,13 +64,13 @@ const ModalEditTitle = ({ isOpen, closeModal, quizId, initialData }) => {
     const formData = new FormData();
 
     // Append updated fields only
-    if (quiz.title !== initialData.title) {
-      formData.append("title", quiz.title); // Ensure title is included if changed
-    }
+    // if (quiz.title !== initialData.title) {
+    formData.append("title", quiz.title); // Ensure title is included if changed
+    // }
 
-    if (quiz.description !== initialData.description) {
-      formData.append("description", quiz.description); // Add description if changed
-    }
+    // if (quiz.description !== initialData.description) {
+    formData.append("description", quiz.description); // Add description if changed
+    // }
 
     // Check if there is an image selected and ensure it's not a URL
     if (quiz.gambar && quiz.gambar instanceof File) {

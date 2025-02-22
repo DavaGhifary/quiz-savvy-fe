@@ -53,6 +53,10 @@ const CardMyQuizz = () => {
     setEditModalOpen(true);
   };
 
+  const handleEditQuizQuestions = (quizId) => {
+    navigate(`/EditQuiz/${quizId}`);
+  };
+
   const handleDeleteQuiz = async (quizId) => {
     try {
       const response = await fetch(`${apiUrl}/quiz/${quizId}`, {
@@ -140,7 +144,10 @@ const CardMyQuizz = () => {
                       Edit Quiz Title
                     </span>
                   </li>
-                  <li className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-md">
+                  <li
+                    className="flex items-center gap-2 cursor-pointer hover:bg-gray-200 p-2 rounded-md"
+                    onClick={() => handleEditQuizQuestions(quiz.id)}
+                  >
                     <SquarePen className="text-primary" />
                     <span className="text-sm text-primary">
                       Edit Quiz Question

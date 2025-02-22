@@ -12,6 +12,7 @@ import ToastNotification from "./components/ToastNotification";
 import Result from "./pages/Quiz/Result";
 import MyQuizz from "./pages/Quiz/MyQuizz";
 import RekapQuiz from "./pages/Quiz/RekapQuiz";
+import EditQuiz from "./pages/Quiz/EditQuiz";
 
 function App() {
   return (
@@ -20,6 +21,14 @@ function App() {
         <Routes>
           {/* Rute Home */}
           <Route path="/" element={<Home />} />
+          <Route
+            path="/EditQuiz/:quizId"
+            element={
+              <ProtectedRoute>
+                <EditQuiz />
+              </ProtectedRoute>
+            }
+          ></Route>
 
           {/* Rute yang membutuhkan login */}
           <Route
