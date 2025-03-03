@@ -7,12 +7,12 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "../ToastNotification";
 import { setSession } from "../../utils/session";
 
-const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }) => {
+const ChangedPassword = ({ isOpen, onClose, onSwitchToSignIn }) => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   if (!isOpen) return null;
 
@@ -82,33 +82,12 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
         </button>
 
         {/* Title and Switch to Sign Up */}
-        <h2 className="text-center text-2xl font-semibold">Sign in</h2>
-        <p className="text-center text-gray-500 mt-2">
-          Don’t have an account?{" "}
-          <span
-            onClick={() => {
-              onClose();
-              onSwitchToSignUp();
-            }}
-            className="text-blue-500 cursor-pointer hover:underline"
-          >
-            Sign up
-          </span>
+        <h2 className="text-center text-2xl font-semibold">Changed Password</h2>
+        <p className="text-left text-gray-500 mt-2 mx-2">
+        Please enter a new password below to change your old password
         </p>
 
         <form onSubmit={handleLogin}>
-          {/* Email Input */}
-          <div className="mt-4">
-            <input
-              type="email"
-              name="email"
-              value={formData.email}
-              onChange={handleInputChange}
-              placeholder="Enter your email address"
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2"
-            />
-          </div>
-
           {/* Password Input with Toggle */}
           <div className="mt-4 relative">
             <input
@@ -136,18 +115,6 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
             <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
           )}
 
-          <div className="flex justify-end pt-1">
-            <span
-              className="text-blue-500 text-sm cursor-pointer hover:underline"
-              onClick={() => {
-                onClose();
-                onSwitchToForgotPassword();
-              }}
-            >
-              Forgot your password?
-            </span>
-          </div>
-
           {/* Sign In Button */}
           <button
             type="submit"
@@ -156,7 +123,7 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
             } focus:outline-none`}
             disabled={isLoading}
           >
-            {isLoading ? "Signing In..." : "Sign In"}
+            {isLoading ? "Change Password..." : "Change Password"}
           </button>
         </form>
 
@@ -177,4 +144,4 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
   );
 };
 
-export default SignIn;
+export default ChangedPassword;

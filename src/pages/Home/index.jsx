@@ -8,14 +8,27 @@ import Ornamen4 from "../../assets/img/Group 119.png";
 import Ornament5 from "../../assets/img/Group 120.png";
 import CardTemplate from "../../components/Card/CardTemplate";
 import Footer from "../../components/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SignIn from "../../components/SignIn";
 import SignUpEmail from "../../components/SignUp/SignUpEmail";
+import ForgotPassword from "../../components/ForgotPasswordPage/ForgotPassword";
+import ChangedPassword from "../../components/ForgotPasswordPage/ChangedPassword";
 
 const Home = () => {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
   const [isSignUpOpen, setIsSignUpOpen] = useState(false);
+  const [isForgotPasswordOpen, setIsForgotPasswordOpen] = useState(false);
+  const [redirectToForgot, setRedirectToForgot] = useState(false);
+  const [isChangedPasswordOpen, setIsChangedPasswordOpen] = useState(false);
 
+  // Efek untuk menangani perpindahan modal ke ForgotPassword
+  useEffect(() => {
+    if (redirectToForgot) {
+      setIsSignInOpen(false);
+      setIsForgotPasswordOpen(true);
+      setRedirectToForgot(false); // Reset setelah perubahan modal
+    }
+  }, [redirectToForgot]);
   return (
     <div>
       <Navbar onSignInClick={() => setIsSignInOpen(true)} />
@@ -26,6 +39,10 @@ const Home = () => {
           setIsSignInOpen(false);
           setIsSignUpOpen(true);
         }}
+        onSwitchToForgotPassword={() => {
+          setIsSignInOpen(false);
+          setIsForgotPasswordOpen(true);
+        }}
       />
       <SignUpEmail
         isOpen={isSignUpOpen}
@@ -35,6 +52,15 @@ const Home = () => {
           setIsSignInOpen(true);
         }}
       />
+      <ForgotPassword isOpen={isForgotPasswordOpen}
+        onClose={() => setIsForgotPasswordOpen(false)}
+        onSwitchToSignIn={() => {
+          setIsForgotPasswordOpen(false);
+          setIsSignInOpen(true); // Tampilkan kembali modal SignIn
+        }}
+      />
+
+      <ChangedPassword isOpen={isChangedPasswordOpen}/>
       <div className="h-screen relative">
         <img src={Ornamen4} alt="" className="absolute right-0 top-[5rem]" />
         <img

@@ -98,9 +98,9 @@ const SignUpEmail = ({ isOpen, onClose, onSwitchToSignIn }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-50 flex justify-end items-start">
       <div
-        className="bg-white p-6 rounded-xl w-full max-w-xs h-[24rem] relative shadow-2xl mt-[3.5rem] mr-[3.5rem]"
+        className="bg-white p-6 py-9 rounded-xl w-full max-w-xs h-auto relative shadow-2xl mt-[3.5rem] mr-[3.5rem]"
         onClick={(e) => e.stopPropagation()}
       >
         <button

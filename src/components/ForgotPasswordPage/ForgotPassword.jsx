@@ -7,18 +7,13 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "../ToastNotification";
 import { setSession } from "../../utils/session";
 
-const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }) => {
+const ForgotPassword = ({ isOpen, onClose, onSwitchToSignIn }) => {
   const navigate = useNavigate();
-  const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
 
   if (!isOpen) return null;
-
-  const togglePasswordVisibility = () => {
-    setShowPassword((prev) => !prev);
-  };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -82,17 +77,17 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
         </button>
 
         {/* Title and Switch to Sign Up */}
-        <h2 className="text-center text-2xl font-semibold">Sign in</h2>
-        <p className="text-center text-gray-500 mt-2">
-          Don’t have an account?{" "}
+        <h2 className="text-center text-2xl font-semibold">Forgot Password?</h2>
+        <p className="text-left text-gray-500 mt-2 mx-3">
+          Please enter the email you use to sign in, or back to 
           <span
             onClick={() => {
               onClose();
-              onSwitchToSignUp();
+              onSwitchToSignIn();
             }}
-            className="text-blue-500 cursor-pointer hover:underline"
+            className="text-blue-500 cursor-pointer hover:underline pl-1"
           >
-            Sign up
+            Sign In
           </span>
         </p>
 
@@ -109,44 +104,10 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
             />
           </div>
 
-          {/* Password Input with Toggle */}
-          <div className="mt-4 relative">
-            <input
-              type={showPassword ? "text" : "password"}
-              name="password"
-              value={formData.password}
-              onChange={handleInputChange}
-              placeholder="Enter your password"
-              className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2"
-            />
-            <span
-              onClick={togglePasswordVisibility}
-              className="absolute right-4 top-3 text-gray-500 cursor-pointer"
-            >
-              {showPassword ? (
-                <FontAwesomeIcon icon={faEyeSlash} />
-              ) : (
-                <FontAwesomeIcon icon={faEye} />
-              )}
-            </span>
-          </div>
-
           {/* Error Message */}
           {errorMessage && (
             <p className="text-red-500 text-sm mt-2">{errorMessage}</p>
           )}
-
-          <div className="flex justify-end pt-1">
-            <span
-              className="text-blue-500 text-sm cursor-pointer hover:underline"
-              onClick={() => {
-                onClose();
-                onSwitchToForgotPassword();
-              }}
-            >
-              Forgot your password?
-            </span>
-          </div>
 
           {/* Sign In Button */}
           <button
@@ -156,7 +117,7 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
             } focus:outline-none`}
             disabled={isLoading}
           >
-            {isLoading ? "Signing In..." : "Sign In"}
+            {isLoading ? "Request reset link..." : "Request reset link"}
           </button>
         </form>
 
@@ -177,4 +138,4 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
   );
 };
 
-export default SignIn;
+export default ForgotPassword;
