@@ -24,11 +24,11 @@ export const getSession = (key) => {
     }
 
     const parsedData = JSON.parse(sessionData);
-    console.log("Parsed session data:", parsedData); // Debugging
+    // console.log("Parsed session data:", parsedData); // Debugging
 
     const now = new Date();
-    console.log("Session expiration:", parsedData.expirationTime); // Debugging
-    console.log("Current time:", now.getTime());
+    // console.log("Session expiration:", parsedData.expirationTime); // Debugging
+    // console.log("Current time:", now.getTime());
 
     if (now.getTime() > parsedData.expirationTime) {
       console.log("Session expired for key:", key);

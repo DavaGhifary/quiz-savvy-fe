@@ -40,7 +40,7 @@ function App() {
             }
           />
           <Route
-            path="/Result/:quizId"
+            path="/Result/:resultId"
             element={
               <ProtectedRoute>
                 <Result />
@@ -48,7 +48,7 @@ function App() {
             }
           />
           <Route
-            path="/RekapQuiz"
+            path="/RekapQuiz/:resultId"
             element={
               <ProtectedRoute>
                 <RekapQuiz />

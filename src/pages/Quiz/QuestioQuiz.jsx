@@ -19,17 +19,40 @@ const QuestionQuiz = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
+    console.log("Jawban", selectedAnswer);
     axios
       .get(`${apiUrl}/questions-with-answers/${quizId}`)
       .then((response) => {
-        console.log("Questions fetched successfully:", response.data);
+        console.log("Questions fetced:", response.data);
         setQuestions(response.data);
-        setUserAnswers(
-          response.data.map((question) => ({
-            questionId: question.id,
-            answerId: null,
-          }))
+
+        const user = getSession("userDetails");
+        if (!user) {
+          alert("User not found");
+          return;
+        }
+
+        const recapRequests = response.data.map((question) =>
+          axios.post(`${apiUrl}/recap-jawaban`, {
+            user_id: user.id,
+            quiz_id: quizId,
+            question_id: question.id,
+            jawaban_id: null,
+          })
         );
+
+        Promise.all(recapRequests)
+          .then((recapRequests) => {
+            console.log("Data recapRequests:", recapRequests.data);
+            const recaps = recapRequests.map((res) => ({
+              questionId: res.data.question_id,
+              recapId: res.data.id,
+              jawaban_id: null,
+            }));
+            setUserAnswers(recaps);
+            console.log("Recap created:", recaps);
+          })
+          .catch((error) => console.error("Error fetching questions:", error));
       })
       .catch((error) => console.error("Error fetching questions:", error));
   }, [quizId]);
@@ -47,7 +70,7 @@ const QuestionQuiz = () => {
       setTimeLeft((prev) => prev - 1);
     }, 1000);
 
-    return () => clearInterval(timer); 
+    return () => clearInterval(timer);
   }, [timeLeft, hasSubmitted, currentQuestionIndex, questions.length]);
 
   const clearTimerAndRedirect = () => {
@@ -83,24 +106,44 @@ const QuestionQuiz = () => {
         score: finalScore,
         taken_at: formattedDate,
       })
-      .then(() => {
-        console.log("Results submitted successfully.");
+      .then((response) => {
+        console.log("Recap submitted :", response.data);
+
+        const resultId = response.data.result.id;
+        if (!resultId) {
+          console.error("No result ID");
+          return;
+        }
+
+        const updateRecapRequest = userAnswers.map((answer) =>
+          axios.patch(`${apiUrl}/recap-jawaban/${answer.recapId}`, {
+            result_id: resultId,
+          })
+        );
+
+        Promise.all(updateRecapRequest)
+          .then(() => console.log("All recap updated with resultId"))
+          .catch((error) =>
+            console.error("Error updating recap with resultId:", error)
+          );
+
+        sessionStorage.setItem("resultId", resultId);
         sessionStorage.setItem("quizId", quizId);
         sessionStorage.setItem("score", finalScore);
         sessionStorage.setItem("totalQuestions", questions.length);
-        navigate(`/Result/${quizId}`);
+        navigate(`/Result/${resultId}`);
       })
       .catch((error) => {
         console.error(
           "Error saving data:",
           error.response?.data || error.message
         );
-        alert("An error occurred while saving the data. Please try again.");
+        alert("Error saving data");
         setHasSubmitted(false);
       });
   };
 
-  const handleAnswerClick = (answer) => {
+  const handleAnswerClick = async (answer) => {
     console.log("Answer clicked:", answer);
     const isValidAnswer = answer.jawaban_valid ?? false;
     setSelectedAnswer(answer.id);
@@ -115,11 +158,21 @@ const QuestionQuiz = () => {
 
     setUserAnswers((prevAnswers) => {
       const updatedAnswers = [...prevAnswers];
-      updatedAnswers[currentQuestionIndex] = {
-        questionId: questions[currentQuestionIndex].id,
-        answerId: answer.id,
-      };
-      console.log("User answers updated:", updatedAnswers);
+      const recapEntry = updatedAnswers.find(
+        (entry) => entry.questionId === questions[currentQuestionIndex].id
+      );
+
+      if (recapEntry) {
+        recapEntry.answerId = answer.id;
+
+        axios
+          .patch(`${apiUrl}/recap-jawaban/${recapEntry.recapId}`, {
+            jawaban_id: answer.id,
+          })
+          .then(() => console.log("Recap updated:", recapEntry))
+          .catch((error) => console.error("Error updating recap:", error));
+      }
+
       return updatedAnswers;
     });
 
@@ -144,13 +197,13 @@ const QuestionQuiz = () => {
       setSelectedAnswer(null);
       setIsAnswerCorrect(null);
     } else {
-      console.log("All questions completed. Submitting results.");
       clearTimerAndRedirect();
+      console.log("All questions completed. Submitting results.");
     }
   };
 
   if (questions.length === 0) {
-    console.log("Questions not loaded yet.");
+    // console.log("Questions not loaded yet.");
     return <div>Loading...</div>;
   }
 

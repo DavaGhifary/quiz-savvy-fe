@@ -13,9 +13,11 @@ import {
   Clock,
 } from "lucide-react";
 import Checkbox from "../../components/Checbox/Checbox";
+import { useNavigate } from "react-router-dom";
 
 const EditQuiz = () => {
   const { quizId } = useParams();
+  const navigate = useNavigate();
   const [questions, setQuestions] = useState([
     {
       id: 1,
@@ -101,8 +103,8 @@ const EditQuiz = () => {
             : q
         )
       );
-      console.log(quizData);
       showToast("success", "Question and answers updated successfully");
+      navigate('/Dashboard/MyQuiz');
     } catch (error) {
       console.error("Error updating:", error.response?.data);
       showToast("error", "Failed to update data.");
