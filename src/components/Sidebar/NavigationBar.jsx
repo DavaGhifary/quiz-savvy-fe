@@ -2,24 +2,29 @@ import React, { useState, useRef, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Logo from "../../assets/img/Logo.png";
 import {
-  Gauge,
   SwatchBook,
   Copy,
   ChevronLeft,
   LogOut,
   BookUser,
+  Users,
+  LayoutDashboard,
+  LogOutIcon,
 } from "lucide-react";
-import UserAvatar from "../UserAvatar";
 import { showToast } from "../ToastNotification";
-import { getSession } from "../../utils/session";
-import axios from "axios";
-import QuizHistory from "../../pages/Quiz/QuizHistory";
+import { getSession, removeSession } from "../../utils/session";
 
 const NavLinks = [
   {
     name: "Dashboard",
     path: "/Dashboard",
-    Icon: Gauge,
+    Icon: LayoutDashboard,
+  },
+  {
+    name: "User Management",
+    path: "/Dashboard/User-Management",
+    Icon: Users,
+    roles: [1],
   },
   {
     name: "Category",
@@ -36,42 +41,21 @@ const NavLinks = [
 const NavigationBar = ({ onToggleSidebar }) => {
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [isLogoutPopupOpen, setIsLogoutPopupOpen] = useState(false);
-  const [user, setUser] = useState(null);
-  const [roleName, setRoleName] = useState("Unknown Role"); // State untuk nama role
   const location = useLocation();
   const navigate = useNavigate();
   const popupRef = useRef(null);
+  const [user, setUser] = useState(null);
 
-  const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
-    const storedUser = getSession("userDetails");
+    const storedUser = getSession("userDetails"); // Ambil dari sessionStorage
     if (storedUser) {
       setUser(storedUser);
-      fetchRoleName(storedUser.roles_id);
-    } else {
-      axios
-        .get(`${apiUrl}/users`)
-        .then((response) => {
-          setUser(response.data);
-          fetchRoleName(response.data.roles_id);
-        })
-        .catch((error) => console.error("Failed to fetch user data:", error));
     }
   }, []);
 
-  const fetchRoleName = (rolesId) => {
-    if (rolesId) {
-      axios
-        .get(`${apiUrl}/roles/${rolesId}`)
-        .then((response) => setRoleName(response.data.nama))
-        .catch((error) => console.error("Failed to fetch role name:", error));
-    }
-  };
+  const userRole = user?.roles_id || 2; // Default ke 2 jika tidak ada role
 
-  const removeSession = (key) => {
-    localStorage.removeItem(key);
-  };
 
   const handleLogout = () => {
     removeSession("authToken");
@@ -108,23 +92,28 @@ const NavigationBar = ({ onToggleSidebar }) => {
   return (
     <div
       className={`${
-        isSidebarOpen ? "w-64" : "w-20"
-      } bg-primary border-r h-screen p-5 pt-8 relative duration-300 flex flex-col justify-between`}
+        isSidebarOpen ? "w-64" : "w-[85px]"
+      } bg-secondary border-r h-screen rounded-e-[3rem] py-5 pt-8 relative duration-300 flex flex-col justify-between`}
     >
       <ChevronLeft
-        className={`absolute cursor-pointer -right-3 top-9 w-6 bg-Tertiary text-white rounded-full ${
+        className={`absolute cursor-pointer -right-3 top-[50%] w-6 bg-Tertiary text-white rounded-full ${
           !isSidebarOpen && "rotate-180"
         }`}
         onClick={handleSidebarToggle}
       />
 
-      <div>
+      <div className={`${isSidebarOpen ? "" : "w-[40px]"}`}>
         <Link to="/">
           <div className="flex gap-x-4 items-center">
-            <img src={Logo} width={40} alt="Logo" className="cursor-pointer" />
+            <img
+              src={Logo}
+              width={40}
+              alt="Logo"
+              className="cursor-pointer ml-4"
+            />
             <h1
-              className={`text-white origin-left font-medium text-xl duration-200 ${
-                !isSidebarOpen && "scale-0"
+              className={`text-white origin-left font-medium text-xl ${
+                !isSidebarOpen && "hidden"
               }`}
             >
               Savvy
@@ -132,86 +121,49 @@ const NavigationBar = ({ onToggleSidebar }) => {
           </div>
         </Link>
 
-        <ul className="pt-6">
-          {NavLinks.map((menu, index) => (
-            <li
-              key={index}
-              className={`flex rounded-md p-2 items-center gap-x-4 text-sm mt-2 ${
-                location.pathname === menu.path
-                  ? "bg-Tertiary text-white"
-                  : "text-gray-300 hover:bg-Tertiary hover:text-white"
-              }`}
-            >
-              <Link
-                to={menu.path}
-                className="flex items-center gap-x-4 w-full h-full"
+        <ul className={`pt-8 ${isSidebarOpen ? "w-64" : "w-20"}`}>
+          {NavLinks.filter(
+            (menu) => !menu.roles || menu.roles.includes(userRole)
+          ).map((menu, index) => {
+            const isActive = location.pathname === menu.path;
+            return (
+              <li
+                key={index}
+                className={`group relative flex items-center gap-x-4 text-sm mt-2 px-6 py-2 transition-colors duration-200
+      ${
+        isActive
+          ? "border-s-2 border-Tertiary text-Tertiary"
+          : "text-white hover:text-Tertiary hover:border-s-2 hover:border-Tertiary"
+      }`}
               >
-                <menu.Icon className="text-white" />
-                <span
-                  className={`${
-                    !isSidebarOpen && "hidden"
-                  } origin-left duration-200`}
+                <Link
+                  to={menu.path}
+                  className="flex items-center gap-x-4 w-full h-full"
                 >
-                  {menu.name}
-                </span>
-              </Link>
-            </li>
-          ))}
+                  <menu.Icon className="w-7 h-7" />
+                  <span className={`${!isSidebarOpen && "hidden"}`}>
+                    {menu.name}
+                  </span>
+                </Link>
+              </li>
+            );
+          })}
         </ul>
       </div>
 
-      <div>
-        {/* // history quiz */}
-        <QuizHistory />
-        <div
-          className={`relative bg-[#BABEC6] bg-opacity-[31%] flex rounded-md mt-[7.5rem] -mx-3 p-2 cursor-pointer`}
-          onClick={() => setIsLogoutPopupOpen(true)}
+      <div className="px-6 py-2 transition-colors duration-200">
+        <button
+          className="flex items-center gap-x-4 w-full h-full text-white hover:text-Tertiary"
+          onClick={(e) => {
+            e.stopPropagation();
+            handleLogout();
+          }}
         >
-          <div className="px-1">
-            <UserAvatar name={user?.nama} />
-          </div>
-
-          {isSidebarOpen && (
-            <div className="px-3">
-              <p className="text-md font-semibold">
-                {user?.nama || "Unknown User"}
-              </p>
-              <p className="text-sm text-white">{roleName}</p>
-            </div>
-          )}
-        </div>
-        {isLogoutPopupOpen && (
-          <div
-            ref={popupRef}
-            className={`absolute bottom-16 ${
-              isSidebarOpen ? "left-5 right-5" : "left-3 right-3"
-            } bg-[#BABEC6] bg-opacity-[31%] cursor-pointer rounded-md shadow-lg`}
-            style={{ zIndex: 1000 }}
-          >
-            <Link to="/Dashboard/MyQuiz">
-              <button
-                className={`flex items-center justify-center ${
-                  isSidebarOpen ? "px-3 py-2 gap-3" : "p-3"
-                } text-white rounded-lg`}
-              >
-                <BookUser />
-                {isSidebarOpen && "My Quiz"}
-              </button>
-            </Link>
-            <button
-              className={`flex items-center justify-center ${
-                isSidebarOpen ? "px-3 py-2 gap-3" : "p-3"
-              } text-white rounded-lg`}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleLogout();
-              }}
-            >
-              <LogOut />
-              {isSidebarOpen && "Logout"}
-            </button>
-          </div>
-        )}
+          <LogOutIcon className="w-7 h-7" />
+          <span className={`${!isSidebarOpen && "hidden"} origin-left`}>
+            Logout
+          </span>
+        </button>
       </div>
     </div>
   );

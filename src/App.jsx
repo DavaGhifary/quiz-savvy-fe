@@ -2,8 +2,6 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import QuestionQuiz from "./pages/Quiz/QuestioQuiz";
 import AdminLayout from "./layouts/AdminLayout";
-import Dashboard from "./pages/Dashboard/Dashboard";
-import Category from "./pages/Dashboard/Category";
 import Templates from "./pages/Dashboard/Templates";
 import CreateQuiz from "./pages/Quiz/CreateQuiz";
 import NotFound from "./pages/NotFound";
@@ -13,6 +11,9 @@ import Result from "./pages/Quiz/Result";
 import MyQuizz from "./pages/Quiz/MyQuizz";
 import RekapQuiz from "./pages/Quiz/RekapQuiz";
 import EditQuiz from "./pages/Quiz/EditQuiz";
+import UserManagement from "./pages/Dashboard/UserManagement";
+import DashboardPage from "./components/AdminOrUser/DashboardPage";
+import CategoryPage from "./components/AdminOrUser/CategoryPage";
 
 function App() {
   return (
@@ -71,14 +72,22 @@ function App() {
               </ProtectedRoute>
             }
           >
-            <Route index element={<Dashboard />} />
+            <Route index element={<DashboardPage />} />
             <Route
               path="Category"
               element={
                 <ProtectedRoute>
-                  <Category />
+                  <CategoryPage />
                 </ProtectedRoute>
               }
+            />
+            <Route 
+            path="User-Management"
+            element={
+              <ProtectedRoute>
+                <UserManagement />
+              </ProtectedRoute>
+            }
             />
             <Route
               path="Templates"

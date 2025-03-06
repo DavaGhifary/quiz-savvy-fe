@@ -4,9 +4,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        "primary": "#6D9773", // Warna kustom
-        "secondary": "#0C382E", // Warna kustom
-        "Tertiary": "#FFBA00", // Warna kustom
+        "primary": "#7DCB80", // Warna kustom
+        "secondary": "#376A63", // Warna kustom
+        "Tertiary": "#FDD744", // Warna kustom
       },
       boxShadow: {
         'inner-corect': 'inset 0 0 10px 5px #47EC1D', // Sesuaikan sesuai kebutuhan

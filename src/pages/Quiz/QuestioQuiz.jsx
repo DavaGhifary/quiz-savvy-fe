@@ -92,10 +92,10 @@ const QuestionQuiz = () => {
       return;
     }
 
-    const formattedDate = new Date()
-      .toISOString()
-      .slice(0, 19)
-      .replace("T", " ");
+    const now = new Date();
+    now.setHours(now.getHours() + 7); // Tambah 7 jam untuk WIB
+    const formattedDate = now.toISOString().slice(0, 19).replace("T", " ");
+
     const finalScore = score;
 
     console.log("Submitting results with score:", finalScore);
