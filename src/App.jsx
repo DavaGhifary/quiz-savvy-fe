@@ -14,6 +14,8 @@ import EditQuiz from "./pages/Quiz/EditQuiz";
 import UserManagement from "./pages/Dashboard/UserManagement";
 import DashboardPage from "./components/AdminOrUser/DashboardPage";
 import CategoryPage from "./components/AdminOrUser/CategoryPage";
+import GoogleCallback from "./pages/Google/GoogleCallback";
+import ResetPassword from "./pages/Password/ResetPassword";
 
 function App() {
   return (
@@ -22,6 +24,15 @@ function App() {
         <Routes>
           {/* Rute Home */}
           <Route path="/" element={<Home />} />
+          <Route
+            path="/reset-password/:token"
+            element={
+              <div>
+                <ResetPassword />
+              </div>
+            }
+          />
+          <Route path="/auth/google/callback" element={<GoogleCallback />} />
           <Route
             path="/EditQuiz/:quizId"
             element={
@@ -81,13 +92,13 @@ function App() {
                 </ProtectedRoute>
               }
             />
-            <Route 
-            path="User-Management"
-            element={
-              <ProtectedRoute>
-                <UserManagement />
-              </ProtectedRoute>
-            }
+            <Route
+              path="User-Management"
+              element={
+                <ProtectedRoute>
+                  <UserManagement />
+                </ProtectedRoute>
+              }
             />
             <Route
               path="Templates"

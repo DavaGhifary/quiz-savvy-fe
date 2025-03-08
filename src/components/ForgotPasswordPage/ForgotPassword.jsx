@@ -2,63 +2,25 @@ import React, { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LogoGoogle from "../../assets/img/logoGoogle.png";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "../ToastNotification";
 import { setSession } from "../../utils/session";
 
 const ForgotPassword = ({ isOpen, onClose, onSwitchToSignIn }) => {
-  const navigate = useNavigate();
-  const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
+  const [message, setMessage] = useState("");
+  const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   if (!isOpen) return null;
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
-  };
-
-  const handleLogin = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
+  const handleSubmitEmail = async (e) => {
     e.preventDefault();
-    setErrorMessage("");
-
-    if (!formData.email || !formData.password) {
-      setErrorMessage("Email and password are required.");
-      showToast("error", "Email and password are required.");
-      return;
-    }
-
-    setIsLoading(true);
-
     try {
-      const response = await axios.post(`${apiUrl}/login`, formData);
-
-      // Check if token and user are present in the response
-      const { token, user } = response.data;
-      if (!token || !user) {
-        throw new Error("Login failed: Invalid response data.");
-      }
-
-      // Set session with 24 hours expiration
-      setSession("authToken", token, 24);
-      setSession("userDetails", user, 24);
-
-      // Show success toast
-      showToast("success", "Login successful!");
-      navigate("/Dashboard");
+      const response = await axios.post(`${apiUrl}/forgot-password`, { email });
+      setMessage(response.data.message);
     } catch (error) {
-      const errorMsg =
-        error.response?.data?.message ||
-        error.message ||
-        "An unexpected error occurred. Please try again.";
-      setErrorMessage(errorMsg);
-      showToast("error", errorMsg);
-    } finally {
-      setIsLoading(false);
+      setMessage("Email not found");
     }
   };
 
@@ -79,7 +41,7 @@ const ForgotPassword = ({ isOpen, onClose, onSwitchToSignIn }) => {
         {/* Title and Switch to Sign Up */}
         <h2 className="text-center text-2xl font-semibold">Forgot Password?</h2>
         <p className="text-left text-gray-500 mt-2 mx-3">
-          Please enter the email you use to sign in, or back to 
+          Please enter the email you use to sign in, or back to
           <span
             onClick={() => {
               onClose();
@@ -91,14 +53,15 @@ const ForgotPassword = ({ isOpen, onClose, onSwitchToSignIn }) => {
           </span>
         </p>
 
-        <form onSubmit={handleLogin}>
+        <form onSubmit={handleSubmitEmail}>
           {/* Email Input */}
           <div className="mt-4">
             <input
+              required
               type="email"
               name="email"
-              value={formData.email}
-              onChange={handleInputChange}
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               placeholder="Enter your email address"
               className="w-full px-4 py-3 border rounded-lg focus:outline-none focus:ring-2"
             />

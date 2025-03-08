@@ -13,6 +13,7 @@ import SignIn from "../../components/SignIn";
 import SignUpEmail from "../../components/SignUp/SignUpEmail";
 import ForgotPassword from "../../components/ForgotPasswordPage/ForgotPassword";
 import ChangedPassword from "../../components/ForgotPasswordPage/ChangedPassword";
+import { getSession, removeSession } from "../../utils/session";
 
 const Home = () => {
   const [isSignInOpen, setIsSignInOpen] = useState(false);
@@ -23,6 +24,12 @@ const Home = () => {
 
   // Efek untuk menangani perpindahan modal ke ForgotPassword
   useEffect(() => {
+    const token = getSession("authToken");
+    if (token) {
+      // removeSession("userDetails");
+      window.location.href = "/Dashboard";
+    }
+
     if (redirectToForgot) {
       setIsSignInOpen(false);
       setIsForgotPasswordOpen(true);
@@ -52,7 +59,8 @@ const Home = () => {
           setIsSignInOpen(true);
         }}
       />
-      <ForgotPassword isOpen={isForgotPasswordOpen}
+      <ForgotPassword
+        isOpen={isForgotPasswordOpen}
         onClose={() => setIsForgotPasswordOpen(false)}
         onSwitchToSignIn={() => {
           setIsForgotPasswordOpen(false);
@@ -60,7 +68,7 @@ const Home = () => {
         }}
       />
 
-      <ChangedPassword isOpen={isChangedPasswordOpen}/>
+      <ChangedPassword isOpen={isChangedPasswordOpen} />
       <div className="h-screen relative">
         <img src={Ornamen4} alt="" className="absolute right-0 top-[5rem]" />
         <img

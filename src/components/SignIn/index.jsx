@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import LogoGoogle from "../../assets/img/logoGoogle.png";
@@ -7,14 +7,21 @@ import { faEye, faEyeSlash } from "@fortawesome/free-solid-svg-icons";
 import { showToast } from "../ToastNotification";
 import { setSession } from "../../utils/session";
 
-const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }) => {
+const SignIn = ({
+  isOpen,
+  onClose,
+  onSwitchToSignUp,
+  onSwitchToForgotPassword,
+}) => {
+  if (!isOpen) return null;
   const navigate = useNavigate();
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({ email: "", password: "" });
   const [errorMessage, setErrorMessage] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [googleUrl, setGoogleUrl] = useState("");
 
-  if (!isOpen) return null;
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const togglePasswordVisibility = () => {
     setShowPassword((prev) => !prev);
@@ -26,8 +33,6 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
   };
 
   const handleLogin = async (e) => {
-    const apiUrl = import.meta.env.VITE_API_URL;
-
     e.preventDefault();
     setErrorMessage("");
 
@@ -65,6 +70,10 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleLoginGoogle = () => {
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   return (
@@ -168,7 +177,10 @@ const SignIn = ({ isOpen, onClose, onSwitchToSignUp, onSwitchToForgotPassword  }
         </div>
 
         {/* Google Sign In */}
-        <button className="w-full py-3 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-100">
+        <button
+          onClick={handleLoginGoogle}
+          className="w-full py-3 flex items-center justify-center bg-white border border-gray-300 rounded-full hover:bg-gray-100"
+        >
           <img src={LogoGoogle} alt="Google Icon" className="w-5 h-5 mr-2" />
           Continue with Google
         </button>
