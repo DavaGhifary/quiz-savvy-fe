@@ -3,12 +3,39 @@ import React, { useState } from "react";
 
 const ModalEnterCode = ({ isOpen, closeModal, onSubmit }) => {
   const [code, setCode] = useState("");
+  const [error, setError] = useState("");
 
+  const apiUrl = import.meta.env.VITE_API_URL;
   if (!isOpen) return null;
 
-  const handleSubmit = () => {
-    onSubmit(code);
-    closeModal();
+  const handleSubmit = async () => {
+    if (code.length === 6) {
+      await onSubmit(code); // Kirim kode ke backend
+      closeModal(); // Tutup modal setelah mengirim
+    } else {
+      alert("Please enter a valid 6-digit code");
+    }
+
+    setError("");
+
+    try {
+      const response = await fetch(`${apiUrl}/quiz/check-code`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        onSubmit(data.quiz_id);
+        closeModal();
+      } else {
+        setError("Invalid Code");
+      }
+    } catch (error) {
+      setError("Server error");
+    }
   };
 
   return (
@@ -20,7 +47,10 @@ const ModalEnterCode = ({ isOpen, closeModal, onSubmit }) => {
           <CodeXml className="text-white" size={30} />
         </div>
 
-        <div className="absolute top-2 right-2 flex justify-end cursor-pointer" onClick={closeModal}>
+        <div
+          className="absolute top-2 right-2 flex justify-end cursor-pointer"
+          onClick={closeModal}
+        >
           <X />
         </div>
 
@@ -43,6 +73,10 @@ const ModalEnterCode = ({ isOpen, closeModal, onSubmit }) => {
             <SendHorizonal />
           </button>
         </div>
+
+        {error && (
+          <p className="text-red-500 text-sm mt-2 text-center">{error}</p>
+        )}
       </div>
     </div>
   );

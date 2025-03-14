@@ -1,11 +1,13 @@
 import { faMagnifyingGlass } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import React, { useEffect, useState } from "react";
+import axios from "axios";
 import CardQuizzes from "../../components/Card/CardQuizzes";
 import { getSession, removeSession } from "../../utils/session";
 import ModalAddTitle from "../../components/Modal/ModalAddTitle";
 import CreateQuiz from "../Quiz/CreateQuiz";
 import ModalEnterCode from "../../components/Modal/ModalEnterCode";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -17,6 +19,9 @@ const Dashboard = () => {
   const closeModal = () => setIsModalOpen(false);
   const openEnterCodeModal = () => setIsEnterCodeModalOpen(true);
   const closeEnterCodeModal = () => setIsEnterCodeModalOpen(false);
+  const navigate = useNavigate();
+
+  const apiUrl = import.meta.env.VITE_API_URL;
 
   const handleQuizCreated = (createdQuizId) => {
     setQuizId(createdQuizId);
@@ -32,6 +37,30 @@ const Dashboard = () => {
 
   const handleSearchChange = (event) => {
     setSearchTerm(event.target.value);
+  };
+
+  const handleEnterCodeSubmit = async (code) => {
+    if (!code || code.length !== 6) {
+      alert("Please enter a valid 6-digit code");
+      return;
+    }
+
+    try {
+      const response = await axios.post(`${apiUrl}/quiz/check-code`, { code });
+
+      console.log("Server Response:", response.data);
+
+      if (response.data.quiz.id) {
+        const quizId = response.data.quiz.id;
+        alert("Code verified! Redirecting...");
+        navigate(`/Quiz/${quizId}`);
+      } else {
+        alert("Invalid response from server");
+      }
+    } catch (error) {
+      console.error("Error Response:", error.response?.data || "Invalid code");
+      alert(error.response?.data?.message || "Invalid code");
+    }
   };
 
   return (
@@ -65,6 +94,7 @@ const Dashboard = () => {
             <ModalEnterCode
               isOpen={isEnterCodeModalOpen}
               closeModal={closeEnterCodeModal}
+              onSubmit={handleEnterCodeSubmit}
             />
           </div>
           <div>

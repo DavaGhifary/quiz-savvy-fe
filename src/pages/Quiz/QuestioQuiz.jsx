@@ -73,7 +73,7 @@ const QuestionQuiz = () => {
     return () => clearInterval(timer);
   }, [timeLeft, hasSubmitted, currentQuestionIndex, questions.length]);
 
-  const clearTimerAndRedirect = () => {
+  const clearTimerAndRedirect = (finalScore) => {
     if (hasSubmitted) return;
 
     setHasSubmitted(true);
@@ -95,8 +95,6 @@ const QuestionQuiz = () => {
     const now = new Date();
     now.setHours(now.getHours() + 7); // Tambah 7 jam untuk WIB
     const formattedDate = now.toISOString().slice(0, 19).replace("T", " ");
-
-    const finalScore = score;
 
     console.log("Submitting results with score:", finalScore);
     axios
@@ -150,8 +148,11 @@ const QuestionQuiz = () => {
     setIsAnswerCorrect(isValidAnswer);
 
     if (isValidAnswer) {
-      setScore((prevScore) => prevScore + 1);
-      console.log("Correct answer! New score:", score + 1);
+      setScore((prevScore) => {
+        const newScore = prevScore + 1;
+        console.log("Correct answer! New score:", newScore);
+        return newScore;
+      });
     } else {
       console.log("Incorrect answer.");
     }
@@ -178,7 +179,13 @@ const QuestionQuiz = () => {
 
     if (currentQuestionIndex === questions.length - 1) {
       console.log("Last question answered. Redirecting...");
-      setTimeout(clearTimerAndRedirect, 2000);
+      setTimeout(() => {
+        setScore((finalScore) => {
+          console.log("Final score before submitting:", finalScore);
+          clearTimerAndRedirect(finalScore);
+          return finalScore;
+        });
+      }, 2000);
     } else {
       setTimeout(() => {
         goToNextQuestion();
