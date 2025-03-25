@@ -36,6 +36,7 @@ const EditQuiz = () => {
   const [showPopup, setShowPopup] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [quizData, setQuizData] = useState([]);
+  const [selectedQuestion, setSelectedQuestion] = useState(null);
   const apiUrl = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
@@ -62,34 +63,88 @@ const EditQuiz = () => {
     }
   };
 
-  const handleUpdate = async (question) => {
+  // const handleUpdateOld = async (question) => {
+  //   try {
+  //     if (!question.id || !quizId) {
+  //       throw new Error("Missing question ID or quiz ID.");
+  //     }
+
+  //     const payload = {
+  //       quiz_id: quizId,
+  //       question_text: question.question_text || "", // Pastikan tidak null atau undefined
+  //       question_type: question.type || "default_type", // Pastikan memiliki nilai default
+  //     };
+
+  //     const responseQuestion = await axios.put(
+  //       `${apiUrl}/questions/${question.id}`,
+  //       payload
+  //     );
+
+  //     const updateAnswers = await Promise.all(
+  //       question.answers.map(async (answer) => {
+  //         if (!answer.id) {
+  //           throw new Error("Missing answer ID.");
+  //         }
+  //         const responseAnswer = await axios.put(
+  //           `${apiUrl}/answers/${answer.id}`,
+  //           {
+  //             question_id: question.id,
+  //             jawaban_pilihan: answer.jawaban_pilihan || "", // Pastikan tidak null atau undefined
+  //             jawaban_valid: answer.jawaban_valid || false, // Pastikan memiliki nilai default
+  //           }
+  //         );
+  //         return responseAnswer.data?.answer || answer;
+  //       })
+  //     );
+
+  //     setQuizData((prev) =>
+  //       prev.map((q) =>
+  //         q.id === question.id
+  //           ? { ...responseQuestion.data.question, answers: updateAnswers }
+  //           : q
+  //       )
+  //     );
+  //     showToast("success", "Question and answers updated successfully");
+  //     navigate("/Dashboard/MyQuiz");
+  //   } catch (error) {
+  //     console.error("Error updating:", error.response?.data);
+  //     showToast("error", "Failed to update data.");
+  //   }
+  // };
+
+  const handleUpdate = async () => {
+    if (!selectedQuestion) {
+      showToast("error", "Please select a question to update.");
+      return;
+    }
+
     try {
-      if (!question.id || !quizId) {
+      if (!selectedQuestion.id || !quizId) {
         throw new Error("Missing question ID or quiz ID.");
       }
 
       const payload = {
         quiz_id: quizId,
-        question_text: question.question_text || "", // Pastikan tidak null atau undefined
-        question_type: question.type || "default_type", // Pastikan memiliki nilai default
+        question_text: selectedQuestion.question_text || "",
+        question_type: selectedQuestion.type || "default_type",
       };
 
       const responseQuestion = await axios.put(
-        `${apiUrl}/questions/${question.id}`,
+        `${apiUrl}/questions/${selectedQuestion.id}`,
         payload
       );
 
       const updateAnswers = await Promise.all(
-        question.answers.map(async (answer) => {
+        selectedQuestion.answers.map(async (answer) => {
           if (!answer.id) {
             throw new Error("Missing answer ID.");
           }
           const responseAnswer = await axios.put(
             `${apiUrl}/answers/${answer.id}`,
             {
-              question_id: question.id,
-              jawaban_pilihan: answer.jawaban_pilihan || "", // Pastikan tidak null atau undefined
-              jawaban_valid: answer.jawaban_valid || false, // Pastikan memiliki nilai default
+              question_id: selectedQuestion.id,
+              jawaban_pilihan: answer.jawaban_pilihan || "",
+              jawaban_valid: answer.jawaban_valid || false,
             }
           );
           return responseAnswer.data?.answer || answer;
@@ -98,16 +153,73 @@ const EditQuiz = () => {
 
       setQuizData((prev) =>
         prev.map((q) =>
-          q.id === question.id
+          q.id === selectedQuestion.id
             ? { ...responseQuestion.data.question, answers: updateAnswers }
             : q
         )
       );
       showToast("success", "Question and answers updated successfully");
-      navigate('/Dashboard/MyQuiz');
+      navigate("/Dashboard/MyQuiz");
     } catch (error) {
       console.error("Error updating:", error.response?.data);
       showToast("error", "Failed to update data.");
+    }
+  };
+
+  const handleUpdateAll = async () => {
+    if (quizData.length === 0) {
+      showToast("error", "No questions to update.");
+      return;
+    }
+
+    try {
+      const updatedQuestions = await Promise.all(
+        quizData.map(async (question) => {
+          if (!question.id || !quizId) {
+            throw new Error("Missing question ID or quiz ID.");
+          }
+
+          const payload = {
+            quiz_id: quizId,
+            question_text: question.question_text || "",
+            question_type: question.type || "default_type",
+          };
+
+          const responseQuestion = await axios.put(
+            `${apiUrl}/questions/${question.id}`,
+            payload
+          );
+
+          const updateAnswers = await Promise.all(
+            question.answers.map(async (answer) => {
+              if (!answer.id) {
+                throw new Error("Missing answer ID.");
+              }
+              const responseAnswer = await axios.put(
+                `${apiUrl}/answers/${answer.id}`,
+                {
+                  question_id: question.id,
+                  jawaban_pilihan: answer.jawaban_pilihan || "",
+                  jawaban_valid: answer.jawaban_valid || false,
+                }
+              );
+              return responseAnswer.data?.answer || answer;
+            })
+          );
+
+          return {
+            ...responseQuestion.data.question,
+            answers: updateAnswers,
+          };
+        })
+      );
+
+      setQuizData(updatedQuestions);
+      showToast("success", "All questions and answers updated successfully.");
+      navigate("/Dashboard/MyQuiz");
+    } catch (error) {
+      console.error("Error updating questions:", error.response?.data);
+      showToast("error", "Failed to update questions and answers.");
     }
   };
 
@@ -215,8 +327,11 @@ const EditQuiz = () => {
           </div>
         </Link>
         <div className="flex items-center gap-4">
-          <button className="bg-blue-500 text-sm p-2 rounded-md text-white">
-            Create Question
+          <button
+            className="bg-blue-500 text-sm p-2 rounded-md text-white"
+            onClick={handleUpdateAll}
+          >
+            Update Question
           </button>
           <Settings />
         </div>
@@ -240,8 +355,10 @@ const EditQuiz = () => {
               {quizData.map((question) => (
                 <div
                   key={question.id}
-                  className="w-full h-20 border border-[#D9D9D9] rounded-lg mb-2 cursor-pointer"
-                  onClick={() => handleScrollToQuestion(question.id)}
+                  className={`w-full h-20 border border-[#D9D9D9] rounded-lg mb-2 cursor-pointer ${
+                    selectedQuestion?.id === question.id ? "bg-[#E4E4E7]" : ""
+                  }`}
+                  onClick={() => setSelectedQuestion(question)}
                 >
                   <div className="h-8 flex items-center mt-1">
                     <div className="bg-[#E4E4E7] w-6 h-6 flex items-center justify-center rounded-full m-2">
@@ -414,14 +531,6 @@ const EditQuiz = () => {
                     <div className="rounded-full p-1">
                       <Clock className="w-4 h-4" />
                     </div>
-                  </div>
-                  <div>
-                    <button
-                      className="bg-blue-500 text-sm p-2 rounded-md text-white"
-                      onClick={() => handleUpdate(question)}
-                    >
-                      Create Question
-                    </button>
                   </div>
                 </div>
               </div>

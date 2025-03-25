@@ -41,7 +41,7 @@ const RekapQuiz = () => {
               <div>
                 <p className="text-3xl text-white">{recapData[0].quiz.title}</p>
               </div>
-              <div className="flex gap-6">
+              {/* <div className="flex gap-6">
                 <div className="flex gap-2">
                   <div className="bg-green-500 w-6 h-6 rounded-sm">
                     <Check className="text-white" />
@@ -58,7 +58,7 @@ const RekapQuiz = () => {
                     <p className="text-white">5</p>
                   </div>
                 </div>
-              </div>
+              </div> */}
             </div>
           )}
 
