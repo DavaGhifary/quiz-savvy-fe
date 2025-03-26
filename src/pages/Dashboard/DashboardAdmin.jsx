@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { NotebookPen, SwatchBook, User2, UsersRound } from "lucide-react";
+import ModalAddTitle from "../../components/Modal/ModalAddTitle";
+import CreateQuiz from "../Quiz/CreateQuiz";
 
 const DashboardAdmin = () => {
   const [stats, setStats] = useState({
@@ -9,8 +11,12 @@ const DashboardAdmin = () => {
     quizzes: 0,
   });
   const [loading, setLoading] = useState(true);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+  const [quizId, setQuizId] = useState(null);
   const apiUrl = import.meta.env.VITE_API_URL;
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -46,12 +52,18 @@ const DashboardAdmin = () => {
     fetchData();
   }, []);
 
+  const handleQuizCreated = (createdQuizId) => {
+    setQuizId(createdQuizId);
+  };
+
   return (
     <div>
       <div className="flex justify-end">
-        <button className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg">
+        <button className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg" onClick={openModal}>
           Create Quiz
         </button>
+        {quizId && <CreateQuiz quizId={quizId}/>}
+        <ModalAddTitle isOpen={isModalOpen} closeModal={closeModal} onQuizCreated={handleQuizCreated}/>
       </div>
 
       {loading ? (

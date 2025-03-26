@@ -8,7 +8,7 @@ import { showToast } from "../ToastNotification";
 const ModalAddTitle = ({ isOpen, closeModal }) => {
   const [loading, setLoading] = useState(false);
   const [questions, setQuestions] = useState([
-    { image: "", title: "", description: "" },
+    { image: "", title: "", description: "", isPrivate: false },
   ]);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
@@ -48,6 +48,7 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
     const formData = new FormData();
     formData.append("title", questions[0].title);
     formData.append("description", questions[0].description);
+    formData.append("is_private", questions[0].isPrivate ? 1 : 0);
 
     const selectedImage = fileInputRef.current?.files[0];
     if (selectedImage) {
@@ -170,6 +171,18 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
                     setQuestions(newQuestions);
                   }}
                 ></textarea>
+                <label className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    checked={questions[0].isPrivate}
+                    onChange={(e) => {
+                      const newQuestions = [...questions];
+                      newQuestions[0].isPrivate = e.target.checked;
+                      setQuestions(newQuestions);
+                    }}
+                  />
+                  Private Quiz
+                </label>
               </div>
             </div>
             {/* Tombol submit */}

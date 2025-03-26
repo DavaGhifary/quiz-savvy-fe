@@ -1,11 +1,16 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { useNavigate } from "react-router-dom"; // Import useNavigate from react-router-dom
+import { useNavigate } from "react-router-dom";
+import ModalCode from "../../components/Modal/ModalCode";
 
 const ModalCategory = ({ isOpen, onClose, quizId }) => {
   const [categories, setCategories] = useState([]);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const navigate = useNavigate();
+  const storeQuiz = localStorage.getItem("createdQuizzes");
+  const dataQuiz = storeQuiz ? JSON.parse(storeQuiz) : [];
+  const kodeQuiz = dataQuiz[0].code;
 
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -14,7 +19,7 @@ const ModalCategory = ({ isOpen, onClose, quizId }) => {
       axios
         .get(`${apiUrl}/categories`)
         .then((response) => {
-          setCategories(response.data); 
+          setCategories(response.data);
         })
         .catch((error) => {
           console.error("There was an error fetching the categories!", error);
@@ -45,8 +50,12 @@ const ModalCategory = ({ isOpen, onClose, quizId }) => {
       })
       .then((response) => {
         console.log("Category submitted successfully:", response.data);
-        onClose();
-        navigate(`/Dashboard`);
+        if (!kodeQuiz) {
+          onClose();
+          navigate("/Dashboard");
+        } else {
+          setIsModalOpen(true);
+        }
       })
       .catch((error) => {
         console.error(
@@ -54,6 +63,10 @@ const ModalCategory = ({ isOpen, onClose, quizId }) => {
           error.response
         );
       });
+  };
+
+  const handleCloseModal = () => {
+    setIsModalOpen(false);
   };
 
   return isOpen ? (
@@ -87,6 +100,7 @@ const ModalCategory = ({ isOpen, onClose, quizId }) => {
           </button>
         </div>
       </div>
+      <ModalCode isOpen={isModalOpen} onClose={handleCloseModal} />
     </div>
   ) : null;
 };

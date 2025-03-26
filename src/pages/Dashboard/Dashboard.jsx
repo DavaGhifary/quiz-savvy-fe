@@ -97,7 +97,7 @@ const Dashboard = () => {
               onSubmit={handleEnterCodeSubmit}
             />
           </div>
-          <div>
+          {/* <div>
             <button
               onClick={openModal}
               className="bg-primary p-2 rounded-md text-sm text-white"
@@ -110,7 +110,7 @@ const Dashboard = () => {
               closeModal={closeModal}
               onQuizCreated={handleQuizCreated}
             />
-          </div>
+          </div> */}
         </div>
       </div>
 
