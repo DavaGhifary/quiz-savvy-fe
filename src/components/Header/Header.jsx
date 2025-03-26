@@ -43,6 +43,7 @@ const Header = ({ isSidebarOpen }) => {
     "/Dashboard/User-Management": "User Management",
     "/Dashboard/Category": "Category",
     "/Dashboard/Templates": "Templates",
+    "/Dashboard/MyQuiz": "My Quiz",
   };
 
   const pageTitle = pageTitles[location.pathname] || "Dashboard";

@@ -3,6 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { EllipsisVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import ModalAddCategory from "../Modal/ModalAddCategory";
+import ModalEditCategory from "../Modal/ModalEditCategory";
+import { showToast } from "../ToastNotification";
 
 const TabelCategory = () => {
   const [data, setData] = useState([]);
@@ -10,12 +13,26 @@ const TabelCategory = () => {
   const [openPopup, setOpenPopup] = useState(null);
   const popupRefs = useRef({});
   const itemsPerPage = 5;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null);
+
+  const openEditModal = (categoryId) => {
+    setSelectedCategoryId(categoryId);
+    setIsEditModalOpen(true);
+  };
+
+  const closeEditModal = () => {
+    setSelectedCategoryId(null);
+    setIsEditModalOpen(false);
+  };
 
   const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/categories`); 
+        const response = await axios.get(`${apiUrl}/categories`);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -70,6 +87,16 @@ const TabelCategory = () => {
     setOpenPopup(openPopup === id ? null : id);
   };
 
+  const handleDeleteCategory = async (categoryId) => {
+    try {
+      await axios.delete(`${apiUrl}/categories/${categoryId}`);
+      setData((prevData) => prevData.filter((item) => item.id !== categoryId));
+      showToast("success", "Category deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting category:", error);
+    }
+  };
+
   return (
     <div className="bg-white h-full rounded-xl p-6">
       <div>
@@ -85,10 +112,18 @@ const TabelCategory = () => {
               className="absolute left-3 top-3 text-gray-300"
             />
           </div>
-          <button className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg">
+          <button
+            className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg"
+            onClick={() => setIsModalOpen(true)}
+          >
             Add Category
           </button>
         </div>
+
+        <ModalAddCategory
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+        />
 
         {/* Table */}
         <div className="">
@@ -112,10 +147,16 @@ const TabelCategory = () => {
                         <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
                           View
                         </button>
-                        <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                        <button
+                          className="block px-4 py-2 w-full text-left hover:bg-gray-200"
+                          onClick={() => openEditModal(item.id)}
+                        >
                           Edit
                         </button>
-                        <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                        <button
+                          className="block px-4 py-2 w-full text-left hover:bg-gray-200"
+                          onClick={() => handleDeleteCategory(item.id)}
+                        >
                           Delete
                         </button>
                       </div>
@@ -126,6 +167,12 @@ const TabelCategory = () => {
             </tbody>
           </table>
         </div>
+
+        <ModalEditCategory
+          isOpen={isEditModalOpen}
+          onClose={closeEditModal}
+          categoryId={selectedCategoryId}
+        />
 
         {/* Pagination */}
         <div className="flex justify-center items-center mt-8 gap-2">

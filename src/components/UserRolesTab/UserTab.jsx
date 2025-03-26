@@ -3,6 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { EllipsisVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import ModalAddUsers from "../Modal/ModalAddUsers";
+import ModalEditUsers from "../Modal/ModalEditUsers";
+import { showToast } from "../ToastNotification";
 
 const UserTab = () => {
   const [data, setData] = useState([]);
@@ -10,12 +13,15 @@ const UserTab = () => {
   const [openPopup, setOpenPopup] = useState(null);
   const popupRefs = useRef({});
   const itemsPerPage = 5;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/users`); 
+        const response = await axios.get(`${apiUrl}/users`);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -72,6 +78,22 @@ const UserTab = () => {
     setOpenPopup(openPopup === id ? null : id);
   };
 
+  const handleEditClick = (user) => {
+    setSelectedUser(user);
+    setIsEditModalOpen(true);
+  };
+
+  const handleDeleteUser = async (id) => {
+    try {
+      await axios.delete(`${apiUrl}/users/${id}`);
+      setData((prevData) => prevData.filter((user) => user.id !== id));
+      setOpenPopup(null);
+      showToast("success", "User deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
+  };
+
   return (
     <div>
       {/* Search & Add User */}
@@ -87,10 +109,18 @@ const UserTab = () => {
             className="absolute left-3 top-3 text-gray-300"
           />
         </div>
-        <button className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg"
+        >
           Add Users
         </button>
       </div>
+
+      <ModalAddUsers
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       {/* Table */}
       <div className="">
@@ -112,10 +142,16 @@ const UserTab = () => {
                       <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
                         View
                       </button>
-                      <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                      <button
+                        className="block px-4 py-2 w-full text-left hover:bg-gray-200"
+                        onClick={() => handleEditClick(item)}
+                      >
                         Edit
                       </button>
-                      <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                      <button
+                        className="block px-4 py-2 w-full text-left hover:bg-gray-200"
+                        onClick={() => handleDeleteUser(item.id)}
+                      >
                         Delete
                       </button>
                     </div>
@@ -126,6 +162,12 @@ const UserTab = () => {
           </tbody>
         </table>
       </div>
+
+      <ModalEditUsers
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        user={selectedUser}
+      />
 
       {/* Pagination */}
       <div className="flex justify-center items-center mt-8 gap-2">

@@ -3,6 +3,9 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import axios from "axios";
 import { EllipsisVertical, ChevronLeft, ChevronRight } from "lucide-react";
 import React, { useEffect, useRef, useState } from "react";
+import ModalAddRoles from "../Modal/ModalAddRoles";
+import { showToast } from "../ToastNotification";
+import ModalEditRoles from "../Modal/ModalEditRoles";
 
 const RolesTab = () => {
   const [data, setData] = useState([]);
@@ -10,12 +13,15 @@ const RolesTab = () => {
   const [openPopup, setOpenPopup] = useState(null);
   const popupRefs = useRef({});
   const itemsPerPage = 5;
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedRole, setSelectedRole] = useState(null);
 
   const apiUrl = import.meta.env.VITE_API_URL;
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`${apiUrl}/roles`); 
+        const response = await axios.get(`${apiUrl}/roles`);
         setData(response.data);
       } catch (error) {
         console.error("Error fetching categories:", error);
@@ -72,6 +78,22 @@ const RolesTab = () => {
     setOpenPopup(openPopup === id ? null : id);
   };
 
+  const handleDelete = async (id) => {
+    try {
+      await axios.delete(`${apiUrl}/roles/${id}`);
+      setData((prevData) => prevData.filter((item) => item.id !== id));
+      showToast("success", "Role deleted successfully!");
+    } catch (error) {
+      console.error("Error deleting role:", error);
+      showToast("error", "Failed to delete role!");
+    }
+  };
+
+  const openEditModal = (role) => {
+    setSelectedRole(role);
+    setIsEditModalOpen(true);
+  };
+
   return (
     <div>
       {/* Search & Add Role */}
@@ -87,10 +109,18 @@ const RolesTab = () => {
             className="absolute left-3 top-3 text-gray-300"
           />
         </div>
-        <button className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg">
+        <button
+          onClick={() => setIsModalOpen(true)}
+          className="bg-secondary px-4 p-3 text-sm text-Tertiary rounded-lg"
+        >
           Add Roles
         </button>
       </div>
+
+      <ModalAddRoles
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+      />
 
       {/* Table */}
       <div className="">
@@ -108,13 +138,16 @@ const RolesTab = () => {
                       ref={(el) => (popupRefs.current[item.id] = el)}
                       className="absolute right-4 mt-2 w-32 bg-white border shadow-md rounded-md z-10"
                     >
-                      <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
-                        View
-                      </button>
-                      <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                      <button
+                        className="block px-4 py-2 w-full text-left hover:bg-gray-200"
+                        onClick={() => openEditModal(item)}
+                      >
                         Edit
                       </button>
-                      <button className="block px-4 py-2 w-full text-left hover:bg-gray-200">
+                      <button
+                        className="block px-4 py-2 w-full text-left hover:bg-gray-200"
+                        onClick={() => handleDelete(item.id)}
+                      >
                         Delete
                       </button>
                     </div>
@@ -125,6 +158,12 @@ const RolesTab = () => {
           </tbody>
         </table>
       </div>
+
+      <ModalEditRoles
+        isOpen={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        role={selectedRole}
+      />  
 
       {/* Pagination */}
       <div className="flex justify-center items-center mt-8 gap-2">

@@ -116,7 +116,7 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
         {error && <div className="text-red-500 mb-4">{error}</div>}
 
         <form onSubmit={handleCreateQuizTitle}>
-          <div className="w-full border rounded-md flex flex-col mb-6">
+          <div className="w-full flex flex-col">
             <div className="flex">
               {/* Gambar kuis */}
               <div className="relative m-2">
@@ -152,7 +152,7 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
               <div className="w-full p-2 flex flex-col gap-y-3">
                 <input
                   type="text"
-                  className="w-full h-[2rem] border px-2"
+                  className="w-full h-[2rem] border border-gray-200 focus:outline-primary rounded-md px-2"
                   placeholder="Input Title"
                   value={questions[0].title}
                   onChange={(e) => {
@@ -162,7 +162,7 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
                   }}
                 />
                 <textarea
-                  className="w-full h-[7rem] border p-2"
+                  className="w-full h-[7.3rem] border border-gray-200 focus:outline-primary rounded-md p-2"
                   placeholder="Input Description"
                   value={questions[0].description}
                   onChange={(e) => {
@@ -188,7 +188,7 @@ const ModalAddTitle = ({ isOpen, closeModal }) => {
             {/* Tombol submit */}
             <button
               type="submit"
-              className="bg-blue-500 text-sm p-2 m-2 rounded-md text-white"
+              className="bg-primary text-sm p-2 m-2 rounded-md text-white"
             >
               {loading ? "Loading..." : "Create Title"}
             </button>

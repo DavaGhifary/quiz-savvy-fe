@@ -39,7 +39,7 @@ const ModalEnterCodeCard = ({ isOpen, closeModal, onSubmit }) => {
   };
 
   return (
-    <div className="fixed inset-0 bg-gray-600 bg-opacity-90 flex items-start justify-center pt-[25%] z-50 ">
+    <div className="fixed inset-0 flex items-start justify-center pt-10 z-50 ">
       {/* Modal Container */}
       <div className="relative bg-white border-2 border-primary text-secondary p-6 rounded-lg shadow-lg w-96">
         {/* Icon at the top */}

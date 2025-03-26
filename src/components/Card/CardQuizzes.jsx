@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Play } from "lucide-react";
+import { LockKeyhole, Play } from "lucide-react";
 import axios from "axios";
 import ModalEnterCodeCard from "../Modal/ModalEnterCodeCard";
 
@@ -87,6 +87,9 @@ function QuizList({ searchTerm }) {
                 </div>
               </div>
             </div>
+            {quiz.is_private === 1 && (
+              <LockKeyhole className="absolute bottom-2 left-2 text-secondary" />
+            )}
           </div>
         ))
       ) : (
